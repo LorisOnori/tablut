@@ -1,10 +1,14 @@
 package player;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Board {
+	
+	//TODO
+	//Posso attraversare le forbiddenCells !!!!
 	
 	public final static int NO_PIECE = -1;
 	public final static int BLACK_ROOK_NUMBER = 12;
@@ -21,7 +25,7 @@ public class Board {
 								{2,9},		{8,1},
 								{3,9},		{8,9},
 								{9,1},{9,2},{9,3},{9,7},{9,8},{9,9}};
-	public final static Set<int[]> finalCellsSet = new HashSet<>();
+	public final static Set<int[]> finalCellsSet = new HashSet<>(Arrays.asList(finalCells));
 	
 	
 	public final static int [] center = {5,5};
@@ -31,7 +35,8 @@ public class Board {
 										{4,9},{5,9},{6,9},{5,8},
 										{9,4},{9,5},{9,6},{8,5}};
 	
-	public final static Set<int[]> forbiddenCellsSet = new HashSet<>();
+	public final static Set<int[]> forbiddenCellsSet = new HashSet<>(Arrays.asList(forbiddenCells));
+
 	
 	
 	public static int nColumns = 9;
@@ -54,14 +59,9 @@ public class Board {
 		
 		//Probabilmente facendo così, ogni volta che ricevo una nuova posizione aggiorno solamente quella precedente
 		//e non ricreo Board da capo
-		for(int []p : finalCells) {
-			finalCellsSet.add(p);
-		}
 		
-		for(int []p : forbiddenCells) {
-			forbiddenCellsSet.add(p);
-		}
 		
+		//TODO magari non stringa ma direttamente la mappa
 		this.updateBoard(s);
 		
 		
@@ -69,6 +69,30 @@ public class Board {
 		
 	}
 	
+	public Board(HashMap<Integer,Piece> board) {
+		this.board = board;
+	
+		//TODO magari non stringa ma direttamente la mappa
+		this.updateBoard(null);
+		
+	}
+	
+	public static boolean isForbidden(int r, int c) {
+		for(int[] f : Board.forbiddenCellsSet) {
+			//System.out.println("R "+r + " C " +c+ " f[0] " + f[0] + " f[1] "+ f[1]);
+			if(r == f[0] && c == f[1])
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean isForbbidden(int index) {
+		int p[];
+		p = Board.indexToCoordinate(index);
+		return Board.isForbidden(p[0], p[1]);
+	}
+	
+	//Magari non stringa ma direttamente la maooa
 	public void updateBoard(String s) {
 		
 		///
@@ -155,15 +179,15 @@ public class Board {
 		return val;
 	}
 	
-	public int numeroPezzi() { //Senza contare il re
+	public int rookDifferenceCount() { //Senza contare il re
 		int val = 0;
 		for(Piece p : board.values()) {
 			if(p.getType() == Type.WHITE_ROOK)
 				val ++;
 			else val--;
 		}
-		return val;
-	}
+		return val+1; //Il altrimenti è contato come nero
+ 	}
 	
 	public int manhattamDistanceToClosestGoal() {
 		int min = Board.nRow + Board.nColumns + 1;
@@ -177,23 +201,29 @@ public class Board {
 		return min;
 	}
 	
+	
 	public int numeroDirezioniRook(int r, int c) {
 		int val = 0;
-		
-		if( r > 1 && board.containsKey(this.coordinateToIndex(r-1, c)))
+		//TODO
+		//Posso muovermi quando non ho un ostacolo --> Posso attraversare le forbbidden Cells
+		if( r > 1 && !board.containsKey(Board.coordinateToIndex(r-1, c)))
 			val ++;
 		
-		if(r < nColumns && board.containsKey(this.coordinateToIndex(r+1, c)))
+		if(r < nColumns && !board.containsKey(Board.coordinateToIndex(r+1, c)))
 			val ++; 
 		
-		if (c > 1 && board.containsKey(this.coordinateToIndex(r, c-1)))
+		if (c > 1 && !board.containsKey(Board.coordinateToIndex(r, c-1)))
 			val++;
 		
-		if (c < nRow && board.containsKey(this.coordinateToIndex(r, c+1)))
+		if (c < nRow && !board.containsKey(Board.coordinateToIndex(r, c+1)))
 			val++;
 		
 		return val;
 		
+	}
+	
+	public int numeroDirezioniPezzo(Piece p) {
+		return this.numeroDirezioniRook(p.getPosition());
 	}
 	
 	public int numeroDirezioniRook(int index) {
@@ -285,10 +315,61 @@ public class Board {
 		
 		//if(player == Player.BLACK) {
 			//NORD
-			int numSud = 0;
 			
+			int currentRowPosition = 1;
+			int currentColumnPosition = 1;
+			
+			
+			Piece pezzo = this.getCell(r, c);
+			
+			//NORD
+			int nord = 0;
+			for(int i = r+1 ; i <= Board.nRow; i++) {
+				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
+				if(board.containsKey(Board.coordinateToIndex(i, c)) || (Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
+					nord++;
+			}
+			ret[Board.NORD] = nord;
+			//SUD
+			int sud = 0;
+			for(int i = r-1 ; i > 0; i--) {
+				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
+				if(board.containsKey(Board.coordinateToIndex(i, c)) || (Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
+					sud++;
+			}
+			ret[Board.SUD] = sud;
+			
+			//EST 
+			int est = 0;
+			for(int i = r+1 ; i <= Board.nColumns; i++) {
+				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
+				//boolean can = Board.forbiddenCellsSet.contains(new int[] {r,i});
+				if(board.containsKey(Board.coordinateToIndex(r, i)) || ( Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
+					est++;
+			}
+			ret[Board.EST] = est;
+			
+			//OVEST
+			int ovest = 0;
+			for(int i = r-1 ; i > 0; i--) {
+				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
+				if(board.containsKey(Board.coordinateToIndex(r, i)) || (Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
+					ovest++;
+			}
+			ret[Board.OVEST] = ovest;
+			
+			/*
 			for(Piece piece : this.getFullColumn(c)) {
-				int currentRowPosition = Board.indexToCoordinate(piece.getPosition())[0];
+			 
+				
 				
 				if(currentRowPosition < r) {
 					//SUD
@@ -307,6 +388,7 @@ public class Board {
 					//Posizione corrente
 					ret[Board.SUD] = numSud; 
 				}
+				currentRowPosition++;
 			}
 			
 			//EST
@@ -316,7 +398,7 @@ public class Board {
 			int numOvest = 0 ;
 			
 			for(Piece piece : this.getFullRow(r)) {
-				int currentColumnPosition = Board.indexToCoordinate(piece.getPosition())[1];
+				
 				
 				if(currentColumnPosition < r) {
 					//OVEST
@@ -335,6 +417,7 @@ public class Board {
 					//Posizione corrente
 					ret[Board.OVEST] = numOvest; 
 				}
+				currentColumnPosition++;
 			}
 			
 			
@@ -345,6 +428,9 @@ public class Board {
 			
 			
 		//}
+		 *
+		 */
+		 
 		return ret;
 	}
 	

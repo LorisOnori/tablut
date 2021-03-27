@@ -8,7 +8,7 @@ public class Piece {
 	
 	public Piece(Type type, int position) {
 		this.type = type;
-		if(this.type == Type.WHITE_ROOK)
+		if(this.type == Type.WHITE_ROOK || this.type == Type.KING)
 			canMooveInsideForbiddenArea = false;
 		this.setPosition(position);
 	}
@@ -24,6 +24,15 @@ public class Piece {
 	public boolean canMooveInsideForbiddenArea() {
 		return this.canMooveInsideForbiddenArea;
 	}
+	/*
+	public boolean canMoove(int r, int c) {
+		
+	}
+	
+	public boolean canMoove(int d) {
+		int []pos = Board.indexToCoordinate(d);
+		return this.canMoove(pos[0], pos[1]);
+	}*/
 
 
 	
