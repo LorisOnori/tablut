@@ -2,19 +2,27 @@ package player;
 
 public class Piece {
 	
-	public Type type;
-	public int position;
-	public boolean canMooveInsideForbiddenArea = true;
+	private Type type;
+	private int position;
+	private boolean canMooveInsideForbiddenArea = true;
 	
-	public Piece(Type type) {
+	public Piece(Type type, int position) {
 		this.type = type;
 		if(this.type == Type.WHITE_ROOK)
 			canMooveInsideForbiddenArea = false;
-			
+		this.setPosition(position);
+	}
+	
+	public Piece(Type type, int r, int c) {
+		this(type, Board.coordinateToIndex(r, c));
 	}
 	
 	public Type getType() {
 		return this.type;
+	}
+	
+	public boolean canMooveInsideForbiddenArea() {
+		return this.canMooveInsideForbiddenArea;
 	}
 
 

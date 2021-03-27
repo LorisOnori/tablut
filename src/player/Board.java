@@ -2,8 +2,6 @@ package player;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class Board {
@@ -64,14 +62,26 @@ public class Board {
 			forbiddenCellsSet.add(p);
 		}
 		
-		this.kindPosition = ;
-		
-		whitePieces = ;
-		blackPieces = ;
+		this.updateBoard(s);
 		
 		
 		
 		
+	}
+	
+	public void updateBoard(String s) {
+		
+		///
+		
+		for(Piece p : this.board.values()) {
+			if(p.getType() == Type.BLACK_ROOK) {
+				this.blackPieces++;
+			}else if(p.getType() == Type.WHITE_ROOK) {
+				this.whitePieces++;
+			}else {
+				this.kindPosition = p.getPosition();
+			}
+		}
 	}
 	
 	public Piece getCell(int i,int j) {
@@ -79,7 +89,7 @@ public class Board {
 		if(this.board.containsKey(num))
 			return board.get(num);
 		else
-			return new Piece(Type.EMPTY);
+			return new Piece(Type.EMPTY,i,j);
 	}
 	
 	// 1 to Row
@@ -93,7 +103,7 @@ public class Board {
 		for(int i = inizio ; i<=fine; i++) {
 			if(board.containsKey(i))
 				ret[index] = board.get(i);
-			else ret[index] = new Piece(Type.EMPTY);
+			else ret[index] = new Piece(Type.EMPTY,i);
 			
 			index++;
 				
@@ -104,13 +114,13 @@ public class Board {
 	//1 to Column
 	public Piece[] getFullColumn(int c) {
 
-		Piece[] ret = new Piece[nColumns];
+		Piece[] ret = new Piece[nRow];
 		int index = 0;
-		for(int i = 0 ; i<nColumns; i++) {
-			
+		int col = c;
+		for(int i = 0 ; i<nRow; i++) {
 			if(board.containsKey(c))
 				ret[index] = board.get(c);
-			else ret[index] = new Piece(Type.EMPTY);
+			else ret[index] = new Piece(Type.EMPTY,i,col);
 			
 			index ++; 
 			c+=this.nRow;
@@ -127,18 +137,44 @@ public class Board {
 		return 0;
 	}
 	
+	public int getWhiteRooksCount() {
+		int val = 0;
+		for(Piece p : this.board.values()) {
+			if(p.getType() == Type.WHITE_ROOK)
+				val++;
+		}
+		return val;
+	}
+	
+	public int getBlackRooksCount() {
+		int val = 0;
+		for(Piece p : this.board.values()) {
+			if(p.getType() == Type.BLACK_ROOK)
+				val++;
+		}
+		return val;
+	}
+	
 	public int numeroPezzi() { //Senza contare il re
 		int val = 0;
 		for(Piece p : board.values()) {
-			if(p.type == Type.WHITE_ROOK)
+			if(p.getType() == Type.WHITE_ROOK)
 				val ++;
 			else val--;
 		}
 		return val;
 	}
 	
-	public int distanzaGoal() {
-		//TODO
+	public int manhattamDistanceToClosestGoal() {
+		int min = Board.nRow + Board.nColumns + 1;
+		int val;
+		int []kingPos = Board.indexToCoordinate(this.kindPosition);
+		for(int [] pos : Board.finalCellsSet) {
+			//xKing - xObj ---- yKing - yObj
+			val = Math.abs(kingPos[1] - pos[1]) + Math.abs(kingPos[0] - kingPos[0]);
+			min = val < min ? val : min;
+		}
+		return min;
 	}
 	
 	public int numeroDirezioniRook(int r, int c) {
@@ -171,16 +207,38 @@ public class Board {
 	
 	public int numeroCaselleDisponibiliRookByPlayer(Player player) {
 		//TODO
-		
+		int spazi[] = new int[Board.DIREZIONI];
+		int val = 0;
 		if(player == Player.WHITE) {
+			
+			for(Piece p : this.board.values()) {
+				if(p.getType() == Type.WHITE_ROOK) {
+					int []pos = Board.indexToCoordinate(p.getPosition());
+					spazi = this.getDistanceOfNextObstacle(pos[0], pos[1]);
+					val += spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
+					
+				}
+			}
 			
 		}else {
 			
+			for(Piece p : this.board.values()) {
+				if(p.getType() == Type.BLACK_ROOK) {
+					int []pos = Board.indexToCoordinate(p.getPosition());
+					spazi = this.getDistanceOfNextObstacle(pos[0], pos[1]);
+					val += spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
+					
+				}
+			}
+			
 		}
+		return val;
 	}
 	
 	public int numeroCaselleDiponibiliKing() {
-		
+		int []kingPos = Board.indexToCoordinate(this.kindPosition);
+		int []spazi = this.getDistanceOfNextObstacle(kingPos[0], kingPos[1]);
+		return spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
 	}
 	
 	/*public int getNextPieceInRaw(int r) {
@@ -195,16 +253,16 @@ public class Board {
 		if(player == Player.WHITE) {
 			position = new int[Board.WHITE_ROOK_NUMBER];
 			for(Piece p : this.board.values()) {
-				if(p.type == Type.WHITE_ROOK) {
-					position[index] = p.position;
+				if(p.getType() == Type.WHITE_ROOK) {
+					position[index] = p.getPosition();
 					index++;
 				}
 			}
 		}else {
 			position = new int[Board.BLACK_ROOK_NUMBER];
 			for(Piece p : this.board.values()) {
-				if(p.type == Type.BLACK_ROOK) {
-					position[index] = p.position;
+				if(p.getType() == Type.BLACK_ROOK) {
+					position[index] = p.getPosition();
 					index++;
 				}
 			}
@@ -218,21 +276,23 @@ public class Board {
 	}
 	*/
 	
-	//Search for pieces of a given color
-	public int[] getDistanceOfNextObstacleByPlayer(int r, int c, Player player) {
+	//Distanza del prossimo ostacolo, amico o nemico che sia -> Numero di caselle occupabili per direzione
+	public int[] getDistanceOfNextObstacle(int r, int c) {
 		int[] ret = new int[Board.DIREZIONI];
+		for(int i = 0; i < ret.length; i++) {
+			ret[i] = 0;
+		}
 		
-		if(player == Player.BLACK) {
+		//if(player == Player.BLACK) {
 			//NORD
-			int numNord = 0;
 			int numSud = 0;
 			
 			for(Piece piece : this.getFullColumn(c)) {
-				int currentRowPosition = Board.indexToCoordinate(piece.position)[0];
+				int currentRowPosition = Board.indexToCoordinate(piece.getPosition())[0];
 				
 				if(currentRowPosition < r) {
 					//SUD
-					if(piece.getType() == Type.EMPTY && !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition()))) {
+					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
 						numSud ++ ;
 					}else {
 						numSud = 0; //Ogni volta che incontro un ostacolo azzero il contatore
@@ -240,7 +300,7 @@ public class Board {
 					}
 				}else if(currentRowPosition > r){
 					//NORD
-					if(piece.getType() == Type.EMPTY && !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition()))) {
+					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
 						ret[Board.NORD]++;
 					}else break; 
 				}else {
@@ -249,17 +309,42 @@ public class Board {
 				}
 			}
 			
-			//SUD
-			
-			
 			//EST
 			
 			
 			//OVEST
+			int numOvest = 0 ;
 			
-		}else {
+			for(Piece piece : this.getFullRow(r)) {
+				int currentColumnPosition = Board.indexToCoordinate(piece.getPosition())[1];
+				
+				if(currentColumnPosition < r) {
+					//OVEST
+					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
+						numOvest ++ ;
+					}else {
+						numOvest = 0; //Ogni volta che incontro un ostacolo azzero il contatore
+									//Quando arrivo  a 0 assegno le caselle dall'ultimo ostacolo fino alla mia fila
+					}
+				}else if(currentColumnPosition > r){
+					//EST
+					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
+						ret[Board.EST]++;
+					}else break; 
+				}else {
+					//Posizione corrente
+					ret[Board.OVEST] = numOvest; 
+				}
+			}
 			
-		}
+			
+			
+		//}else {
+			//WHITE
+			
+			
+			
+		//}
 		return ret;
 	}
 	
