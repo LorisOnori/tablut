@@ -7,9 +7,6 @@ import java.util.Set;
 
 public class Board {
 	
-	//TODO
-	//Posso attraversare le forbiddenCells !!!!
-	
 	public final static int NO_PIECE = -1;
 	public final static int BLACK_ROOK_NUMBER = 12;
 	public final static int WHITE_ROOK_NUMBER = 8;
@@ -86,7 +83,7 @@ public class Board {
 		return false;
 	}
 	
-	public static boolean isForbbidden(int index) {
+	public static boolean isForbidden(int index) {
 		int p[];
 		p = Board.indexToCoordinate(index);
 		return Board.isForbidden(p[0], p[1]);
@@ -204,22 +201,11 @@ public class Board {
 	
 	public int numeroDirezioniRook(int r, int c) {
 		int val = 0;
-		//TODO
-		//Posso muovermi quando non ho un ostacolo --> Posso attraversare le forbbidden Cells
-		if( r > 1 && !board.containsKey(Board.coordinateToIndex(r-1, c)))
-			val ++;
-		
-		if(r < nColumns && !board.containsKey(Board.coordinateToIndex(r+1, c)))
-			val ++; 
-		
-		if (c > 1 && !board.containsKey(Board.coordinateToIndex(r, c-1)))
-			val++;
-		
-		if (c < nRow && !board.containsKey(Board.coordinateToIndex(r, c+1)))
-			val++;
-		
+		int []dir = this.numberOfOccupiableCells(r, c);
+		for(int i : dir)
+			val = i > 0 ? val + 1 : val;
 		return val;
-		
+			
 	}
 	
 	public int numeroDirezioniPezzo(Piece p) {
@@ -235,8 +221,9 @@ public class Board {
 		return numeroDirezioniRook(this.kindPosition);
 	}
 	
+	
 	public int numeroCaselleDisponibiliRookByPlayer(Player player) {
-		//TODO
+		
 		int spazi[] = new int[Board.DIREZIONI];
 		int val = 0;
 		if(player == Player.WHITE) {
@@ -244,7 +231,7 @@ public class Board {
 			for(Piece p : this.board.values()) {
 				if(p.getType() == Type.WHITE_ROOK) {
 					int []pos = Board.indexToCoordinate(p.getPosition());
-					spazi = this.getDistanceOfNextObstacle(pos[0], pos[1]);
+					spazi = this.numberOfOccupiableCells(pos[0], pos[1]);
 					val += spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
 					
 				}
@@ -255,7 +242,7 @@ public class Board {
 			for(Piece p : this.board.values()) {
 				if(p.getType() == Type.BLACK_ROOK) {
 					int []pos = Board.indexToCoordinate(p.getPosition());
-					spazi = this.getDistanceOfNextObstacle(pos[0], pos[1]);
+					spazi = this.numberOfOccupiableCells(pos[0], pos[1]);
 					val += spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
 					
 				}
@@ -267,7 +254,7 @@ public class Board {
 	
 	public int numeroCaselleDiponibiliKing() {
 		int []kingPos = Board.indexToCoordinate(this.kindPosition);
-		int []spazi = this.getDistanceOfNextObstacle(kingPos[0], kingPos[1]);
+		int []spazi = this.numberOfOccupiableCells(kingPos[0], kingPos[1]);
 		return spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
 	}
 	
@@ -307,7 +294,7 @@ public class Board {
 	*/
 	
 	//Distanza del prossimo ostacolo, amico o nemico che sia -> Numero di caselle occupabili per direzione
-	public int[] getDistanceOfNextObstacle(int r, int c) {
+	public int[] numberOfOccupiableCells(int r, int c) {
 		int[] ret = new int[Board.DIREZIONI];
 		for(int i = 0; i < ret.length; i++) {
 			ret[i] = 0;
@@ -326,9 +313,11 @@ public class Board {
 			int nord = 0;
 			for(int i = r+1 ; i <= Board.nRow; i++) {
 				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
-				if(board.containsKey(Board.coordinateToIndex(i, c)) || (Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
-					break;
-				else
+				//Posso eventualmente attravesrare le zone proibite
+				//Ma non posso se c'è un pezzo
+				if(board.containsKey(Board.coordinateToIndex(i, c)))
+					break;//Pezzo presente non posso passare
+				else if((Board.isForbidden(i, c) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(i, c))
 					nord++;
 			}
 			ret[Board.NORD] = nord;
@@ -336,32 +325,32 @@ public class Board {
 			int sud = 0;
 			for(int i = r-1 ; i > 0; i--) {
 				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
-				if(board.containsKey(Board.coordinateToIndex(i, c)) || (Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
+				if(board.containsKey(Board.coordinateToIndex(i, c)))
 					break;
-				else
+				else if((Board.isForbidden(i, c) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(i, c))
 					sud++;
 			}
 			ret[Board.SUD] = sud;
 			
 			//EST 
 			int est = 0;
-			for(int i = r+1 ; i <= Board.nColumns; i++) {
+			for(int i = c+1 ; i <= Board.nColumns; i++) {
 				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
 				//boolean can = Board.forbiddenCellsSet.contains(new int[] {r,i});
-				if(board.containsKey(Board.coordinateToIndex(r, i)) || ( Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
+				if(board.containsKey(Board.coordinateToIndex(r, i)))
 					break;
-				else
+				else if((Board.isForbidden(r, i) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(r, i))
 					est++;
 			}
 			ret[Board.EST] = est;
 			
 			//OVEST
 			int ovest = 0;
-			for(int i = r-1 ; i > 0; i--) {
+			for(int i = c-1 ; i > 0; i--) {
 				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
-				if(board.containsKey(Board.coordinateToIndex(r, i)) || (Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
+				if(board.containsKey(Board.coordinateToIndex(r, i)))
 					break;
-				else
+				else if((Board.isForbidden(r, i) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(r, i))
 					ovest++;
 			}
 			ret[Board.OVEST] = ovest;
@@ -441,14 +430,14 @@ public class Board {
 	*/
 	
 	public static int[] indexToCoordinate(int index) {
-		int r = index / nColumns;
-		int c = index - nRow - r;
+		int r = index / nColumns + 1 ;
+		int c = index - nRow * (r-1);
 		
 		return new int[]{r,c};
 	}
 	
 	public static int coordinateToIndex(int r, int c) {
-		return r * nColumns + c;
+		return (r-1) * nColumns + c;
 	}
 	
 	
