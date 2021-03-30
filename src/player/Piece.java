@@ -4,6 +4,8 @@ public class Piece {
 	
 	private Type type;
 	private int position;
+	private int row;
+	private int column;
 	private boolean canMooveInsideForbiddenArea = true;
 	
 	public Piece(Type type, int position) {
@@ -20,6 +22,8 @@ public class Piece {
 	public Type getType() {
 		return this.type;
 	}
+	
+	
 	
 	public boolean canMooveInsideForbiddenArea() {
 		return this.canMooveInsideForbiddenArea;
@@ -40,8 +44,19 @@ public class Piece {
 		return this.position;
 	}
 	
+	public int getRow() {
+		return this.row;
+	}
+	
+	public int getColumn() {
+		return this.column;
+	}
+	
 	public void setPosition(int position) {
 		this.position = position;
+		int []poss = Board.indexToCoordinate(this.position);
+		this.row = poss[0];
+		this.column = poss[1];
 		if(canMooveInsideForbiddenArea) {
 			//check if he can no long enter in the forbidden area
 			int pos[] = Board.indexToCoordinate(position);

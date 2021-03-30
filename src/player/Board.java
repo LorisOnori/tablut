@@ -1,8 +1,10 @@
 package player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Board {
@@ -51,8 +53,8 @@ public class Board {
 		//Get all the infos from the data
 		//riempo board
 		
-		this.nColumns = nColumns;
-		this.nRow = nRow;
+		Board.nColumns = nColumns;
+		Board.nRow = nRow;
 		
 		//Probabilmente facendo così, ogni volta che ricevo una nuova posizione aggiorno solamente quella precedente
 		//e non ricreo Board da capo
@@ -113,6 +115,11 @@ public class Board {
 			return new Piece(Type.EMPTY,i,j);
 	}
 	
+	public Piece getCell(int p) {
+		int []pos = Board.indexToCoordinate(p);
+		return this.getCell(pos[0], pos[1]);
+	}
+	
 	// 1 to Row
 	public Piece[] getFullRow(int r) {
 		int inizio = r * nColumns + 1; //Se riga 4 -> pezzi dal 37 al 45 compresi
@@ -144,18 +151,65 @@ public class Board {
 			else ret[index] = new Piece(Type.EMPTY,i,col);
 			
 			index ++; 
-			c+=this.nRow;
+			c+=Board.nRow;
 				
 		}
 		return ret;
 	}
 	
+	public int blackAroundKing() {
+		int []p = Board.indexToCoordinate(this.kindPosition);
+		int r = p[0];
+		int c = p[1];
+		int val = 0;
+		
+		if(r > 1 && this.getCell(r-1, c).getType() == Type.BLACK_ROOK)
+			val++;
+		if(r < 9 && this.getCell(r+1, c).getType() == Type.BLACK_ROOK)
+			val++;
+		if(c > 1 && this.getCell(r, c-1).getType() == Type.BLACK_ROOK)
+			val++;
+		if(c < 9 && this.getCell(r, c+1).getType() == Type.BLACK_ROOK)
+			val++;
+		
+		return val;
+	}
+	
 	//public getAllPieces() 	
 	
-	
-	public int eval() {
+	//Nella genereazione di mosse (non qui) posso valutare tutte le mosse e ordinarle in base alla differenza pezzi che dovrebbe essere l'indice più importate
+	//Minmax quindi esplora prima queste mosse e poi le altre.
+	//Valuta la posizione corrente
+	public int eval(int wDifferenzaPezzi, int wDirezioniRe, int wPosizioniOccRe, int wDistanzaDalGoal, int wPosizioniOccupabiliTorriBianco,
+					int wPosizioniOccupabiliTorriNero , int wDirezioniTorriBianco, int wDirezioniTorriNero, int wBlackAroundKing) {
 		//TODO 
-		return 0;
+		
+		/*
+		 * Numero di pezzi
+		 * Direzioni del re
+		 * Posizioni occupabili dal re
+		 * Distanza del re dal goal
+		 * Posizioni occupabili dalle torri
+		 * Direzioni in cui le torri si possono muovere
+		 */
+		
+		
+		int []rooks = this.getRooksByPlayer(Player.WHITE);
+		int dirWhite = 0;
+		int dirBlack = 0;
+		for(int r : rooks) {
+			dirWhite += this.numeroDirezioniRook(r);
+		}
+		
+		rooks = this.getRooksByPlayer(Player.BLACK);
+		for(int r : rooks) {
+			dirBlack += this.numeroDirezioniRook(r);
+		}
+		
+		return wDifferenzaPezzi * this.rookDifferenceCount() + wDirezioniRe * this.numeroDirezioniRe() + wPosizioniOccRe * this.numeroCaselleDiponibiliKing() 
+				+ wDistanzaDalGoal * this.manhattamDistanceToClosestGoal() + wPosizioniOccupabiliTorriBianco * this.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
+				+ wPosizioniOccupabiliTorriNero * this.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)+ wDirezioniTorriBianco * dirWhite 
+				+ wDirezioniTorriNero * dirBlack + wBlackAroundKing * this.blackAroundKing();
 	}
 	
 	public int getWhiteRooksCount() {
@@ -183,7 +237,7 @@ public class Board {
 				val ++;
 			else val--;
 		}
-		return val+1; //Il altrimenti è contato come nero
+		return val+1; //Il re altrimenti è contato come nero
  	}
 	
 	public int manhattamDistanceToClosestGoal() {
@@ -293,6 +347,11 @@ public class Board {
 	}
 	*/
 	
+	public int[] numberOfOccupiableCells(int pos) {
+		int []p = Board.indexToCoordinate(pos);
+		return this.numberOfOccupiableCells(p[0], p[1]);
+	}
+	
 	//Distanza del prossimo ostacolo, amico o nemico che sia -> Numero di caselle occupabili per direzione
 	public int[] numberOfOccupiableCells(int r, int c) {
 		int[] ret = new int[Board.DIREZIONI];
@@ -300,11 +359,6 @@ public class Board {
 			ret[i] = 0;
 		}
 		
-		//if(player == Player.BLACK) {
-			//NORD
-			
-			int currentRowPosition = 1;
-			int currentColumnPosition = 1;
 			
 			
 			Piece pezzo = this.getCell(r, c);
@@ -355,70 +409,6 @@ public class Board {
 			}
 			ret[Board.OVEST] = ovest;
 			
-			/*
-			for(Piece piece : this.getFullColumn(c)) {
-			 
-				
-				
-				if(currentRowPosition < r) {
-					//SUD
-					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
-						numSud ++ ;
-					}else {
-						numSud = 0; //Ogni volta che incontro un ostacolo azzero il contatore
-									//Quando arrivo  a 0 assegno le caselle dall'ultimo ostacolo fino alla mia fila
-					}
-				}else if(currentRowPosition > r){
-					//NORD
-					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
-						ret[Board.NORD]++;
-					}else break; 
-				}else {
-					//Posizione corrente
-					ret[Board.SUD] = numSud; 
-				}
-				currentRowPosition++;
-			}
-			
-			//EST
-			
-			
-			//OVEST
-			int numOvest = 0 ;
-			
-			for(Piece piece : this.getFullRow(r)) {
-				
-				
-				if(currentColumnPosition < r) {
-					//OVEST
-					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
-						numOvest ++ ;
-					}else {
-						numOvest = 0; //Ogni volta che incontro un ostacolo azzero il contatore
-									//Quando arrivo  a 0 assegno le caselle dall'ultimo ostacolo fino alla mia fila
-					}
-				}else if(currentColumnPosition > r){
-					//EST
-					if(piece.getType() == Type.EMPTY && (piece.canMooveInsideForbiddenArea() || !Board.forbiddenCellsSet.contains(Board.indexToCoordinate(piece.getPosition())))) {
-						ret[Board.EST]++;
-					}else break; 
-				}else {
-					//Posizione corrente
-					ret[Board.OVEST] = numOvest; 
-				}
-				currentColumnPosition++;
-			}
-			
-			
-			
-		//}else {
-			//WHITE
-			
-			
-			
-		//}
-		 *
-		 */
 		 
 		return ret;
 	}
@@ -428,6 +418,109 @@ public class Board {
 		
 	}
 	*/
+	
+	//Considero se la destinazione del pezzo va bene (non quello che c'è di mezzo)
+	public boolean isLegalMove(Piece p, int position) {
+		
+		if(this.board.containsKey(position))
+			return false;
+		
+		if(Board.isForbidden(position) && p.canMooveInsideForbiddenArea())
+			return true;
+		else 
+			return false;
+		
+	}
+	
+	public boolean isLegalMove(Piece p, int row, int column) {
+		return this.isLegalMove(p, Board.coordinateToIndex(row, column));
+	}
+	
+	//Attento se ritorna null
+	public int[] possibleMovesByPiece(Piece p) {
+		List<Integer> moves = new ArrayList<>();
+		
+		//da 1 a 9, l'incremento può essere solo di riga o di colonna
+		int row = p.getRow();
+		int column = p.getColumn();
+				
+		
+		//Aumento le righe NORD
+		for(int r = row+1 ; r<= Board.nRow; r++) {
+			if(this.isLegalMove(p, r, column))
+				moves.add(Board.coordinateToIndex(r, column));
+		}
+		
+		//Diminuisco le righe SUD
+		for(int r = row-1 ; r<= Board.nRow; r--) {
+			if(this.isLegalMove(p, r, column))
+				moves.add(Board.coordinateToIndex(r, column));
+		}
+		
+		//Aumento le colonne EST
+		for(int c = column+1; c <= Board.nColumns; c ++) {
+			if(this.isLegalMove(p, row, c))
+				moves.add(Board.coordinateToIndex(row, c));
+		}
+		
+		//Diminuisco le colonne OVEST
+		for(int c = column-1; c <= Board.nColumns; c ++) {
+			if(this.isLegalMove(p, row, c))
+				moves.add(Board.coordinateToIndex(row, c));
+		}
+		
+		int []res = new int[moves.size()];
+		int i = 0;
+		for(int e : moves) {
+			res[i] = e;
+			i++;
+		}
+		
+		return res;
+		
+	}
+	
+	public HashMap<Integer, Piece> clone(){
+		HashMap<Integer, Piece> res = new HashMap<>();
+		for(int i: this.board.keySet()) {
+			res.put(i, this.board.get(i));
+		}
+		return res;
+	}
+	
+	//TODO
+	//Devo controllare se al seguito di una mossa un pezzo viene mangiato
+	//In quel caso devo rimuoverlo
+	//Però quando mando la risposta il mezzo FORSE deve rimanere
+	//Poi il server mi risponde senza il pezzo catturato
+	public HashMap<Integer, Piece> getNextMovesByPlayer(Player player){
+		HashMap<Integer, Piece> newBoard = this.clone();
+		int []moves;
+		if(player == Player.WHITE) {
+			for(Integer p: this.board.keySet()) {
+				Piece piece = getCell(p);
+				if(piece.getType() == Type.WHITE_ROOK || piece.getType() == Type.KING) {
+					moves = this.possibleMovesByPiece(piece);
+					for(int m : moves) {
+						newBoard.remove(piece.getPosition());
+						newBoard.put(m, piece);
+					}
+				}
+			}
+		}else {
+			for(Integer p: this.board.keySet()) {
+				Piece piece = getCell(p);
+				if(piece.getType() == Type.BLACK_ROOK) {
+					moves = this.possibleMovesByPiece(piece);
+					for(int m : moves) {
+						newBoard.remove(piece.getPosition());
+						newBoard.put(m, piece);
+					}
+				}
+			}
+		}
+		return newBoard;
+	}
 	
 	public static int[] indexToCoordinate(int index) {
 		int r = index / nColumns + 1 ;
