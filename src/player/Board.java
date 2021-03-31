@@ -2,12 +2,13 @@ package player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Board {
+public class Board implements Comparable<Board>{
 	
 	public final static int NO_PIECE = -1;
 	public final static int BLACK_ROOK_NUMBER = 12;
@@ -32,7 +33,7 @@ public class Board {
 	public final static int [][] forbiddenCells = {{1,4},{1,5},{1,6},{2,5},
 										{4,1},{5,1},{6,1},{5,2},
 										{4,9},{5,9},{6,9},{5,8},
-										{9,4},{9,5},{9,6},{8,5}};
+										{9,4},{9,5},{9,6},{8,5},center};
 	
 	public final static Set<int[]> forbiddenCellsSet = new HashSet<>(Arrays.asList(forbiddenCells));
 
@@ -89,6 +90,30 @@ public class Board {
 		int p[];
 		p = Board.indexToCoordinate(index);
 		return Board.isForbidden(p[0], p[1]);
+	}
+	
+	public boolean removePiece(int p, Type t) {
+		if(this.board.containsKey(p)) {
+			this.board.remove(p);
+			if(t == Type.BLACK_ROOK)
+				this.blackPieces--;
+			else
+				this.whitePieces--;
+			return true;
+		}else
+			return false;
+	}
+	
+	public boolean removePiece(int r, int c, Type t) {
+		return this.removePiece(Board.coordinateToIndex(r, c),t);
+	}
+	
+	public boolean removePiece(Piece p, Type t) {
+		return this.removePiece(p.getPosition(), t);
+	}
+	
+	public boolean removePiece(Piece p) {
+		return this.removePiece(p.getPosition(), p.getType());
 	}
 	
 	//Magari non stringa ma direttamente la maooa
@@ -184,6 +209,18 @@ public class Board {
 					int wPosizioniOccupabiliTorriNero , int wDirezioniTorriBianco, int wDirezioniTorriNero, int wBlackAroundKing) {
 		//TODO 
 		
+		
+		/*
+		 * 
+		 * Una volta scelta una mossa controllo le catture possibili
+		 * Quindi valuto questa seconda tabella con le catture o vincita di bianco o nero
+		 * Quindi mando lo stato
+		 * Quindi ricevo lo stato aggiornato senza la pedina catturata
+		 */
+		
+		
+		
+		
 		/*
 		 * Numero di pezzi
 		 * Direzioni del re
@@ -230,7 +267,7 @@ public class Board {
 		return val;
 	}
 	
-	public int rookDifferenceCount() { //Senza contare il re
+/*	public int rookDifferenceCount() { //Senza contare il re
 		int val = 0;
 		for(Piece p : board.values()) {
 			if(p.getType() == Type.WHITE_ROOK)
@@ -238,7 +275,11 @@ public class Board {
 			else val--;
 		}
 		return val+1; //Il re altrimenti è contato come nero
- 	}
+ 	}*/
+	
+	public int rookDifferenceCount() {
+		return this.whitePieces-this.blackPieces;
+	}
 	
 	public int manhattamDistanceToClosestGoal() {
 		int min = Board.nRow + Board.nColumns + 1;
@@ -353,6 +394,7 @@ public class Board {
 	}
 	
 	//Distanza del prossimo ostacolo, amico o nemico che sia -> Numero di caselle occupabili per direzione
+	//Non posso attraversare le zone proibite
 	public int[] numberOfOccupiableCells(int r, int c) {
 		int[] ret = new int[Board.DIREZIONI];
 		for(int i = 0; i < ret.length; i++) {
@@ -371,7 +413,9 @@ public class Board {
 				//Ma non posso se c'è un pezzo
 				if(board.containsKey(Board.coordinateToIndex(i, c)))
 					break;//Pezzo presente non posso passare
-				else if((Board.isForbidden(i, c) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(i, c))
+				else if((Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
 					nord++;
 			}
 			ret[Board.NORD] = nord;
@@ -381,7 +425,9 @@ public class Board {
 				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
 				if(board.containsKey(Board.coordinateToIndex(i, c)))
 					break;
-				else if((Board.isForbidden(i, c) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(i, c))
+				else if((Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
 					sud++;
 			}
 			ret[Board.SUD] = sud;
@@ -393,7 +439,9 @@ public class Board {
 				//boolean can = Board.forbiddenCellsSet.contains(new int[] {r,i});
 				if(board.containsKey(Board.coordinateToIndex(r, i)))
 					break;
-				else if((Board.isForbidden(r, i) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(r, i))
+				else if((Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
 					est++;
 			}
 			ret[Board.EST] = est;
@@ -404,7 +452,9 @@ public class Board {
 				//Non posso andare se c'è un pezzo -> è nella board oppure se fa parte della caselle proibite e io non posso andarci
 				if(board.containsKey(Board.coordinateToIndex(r, i)))
 					break;
-				else if((Board.isForbidden(r, i) && pezzo.canMooveInsideForbiddenArea()) || !Board.isForbidden(r, i))
+				else if((Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
+					break;
+				else
 					ovest++;
 			}
 			ret[Board.OVEST] = ovest;
@@ -493,8 +543,14 @@ public class Board {
 	//In quel caso devo rimuoverlo
 	//Però quando mando la risposta il mezzo FORSE deve rimanere
 	//Poi il server mi risponde senza il pezzo catturato
-	public HashMap<Integer, Piece> getNextMovesByPlayer(Player player){
+	
+	//Ritorno tutte le mosse possibili
+	//Valuto tutte le mosse 
+	//Ordino le mosse
+	//Minmax
+	public List<Mossa> getNextMovesByPlayer(Player player){
 		HashMap<Integer, Piece> newBoard = this.clone();
+		List<Mossa> result = new ArrayList<>();
 		int []moves;
 		if(player == Player.WHITE) {
 			for(Integer p: this.board.keySet()) {
@@ -504,6 +560,7 @@ public class Board {
 					for(int m : moves) {
 						newBoard.remove(piece.getPosition());
 						newBoard.put(m, piece);
+						result.add(new Mossa(new Board(newBoard), piece));
 					}
 				}
 			}
@@ -515,11 +572,12 @@ public class Board {
 					for(int m : moves) {
 						newBoard.remove(piece.getPosition());
 						newBoard.put(m, piece);
+						result.add(new Mossa(new Board(newBoard), piece));
 					}
 				}
 			}
 		}
-		return newBoard;
+		return result;
 	}
 	
 	public static int[] indexToCoordinate(int index) {
@@ -531,6 +589,12 @@ public class Board {
 	
 	public static int coordinateToIndex(int r, int c) {
 		return (r-1) * nColumns + c;
+	}
+
+
+	@Override
+	public int compareTo(Board other) {
+		return Integer.compare(this.rookDifferenceCount(), other.rookDifferenceCount());
 	}
 	
 	
