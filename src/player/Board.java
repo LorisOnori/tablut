@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Board implements Comparable<Board>{
+public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	public final static int NO_PIECE = -1;
 	public final static int BLACK_ROOK_NUMBER = 12;
@@ -487,6 +487,7 @@ public class Board implements Comparable<Board>{
 	}
 	
 	//Attento se ritorna null
+	//Ritorna tutte le coordinate di arrivo del possibile pezzo
 	public int[] possibleMovesByPiece(Piece p) {
 		List<Integer> moves = new ArrayList<>();
 		
@@ -577,6 +578,11 @@ public class Board implements Comparable<Board>{
 				}
 			}
 		}
+		if(result.isEmpty())
+			//Nessuno mossa possibile, quel giocatore ha perso
+			//TODO
+			return null;
+		
 		return result;
 	}
 	
@@ -595,6 +601,13 @@ public class Board implements Comparable<Board>{
 	@Override
 	public int compareTo(Board other) {
 		return Integer.compare(this.rookDifferenceCount(), other.rookDifferenceCount());
+	}
+
+
+	@Override
+	public int compare(Board o1, Board o2) {
+		return Integer.compare(o1.rookDifferenceCount(), o2.rookDifferenceCount());
+
 	}
 	
 	

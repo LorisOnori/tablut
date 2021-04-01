@@ -1,15 +1,19 @@
 package player;
 
-public class Mossa {
+import java.util.Comparator;
+
+public class Mossa implements Comparator<Mossa>, Comparable<Mossa>{
 
 	
 	private Board b;
 	private Piece piece;
+	private Board boardAggiornata;
 	
 	//Passo la nuova board con l'ultimo pezzo mosso
 	public Mossa(Board b, Piece p) {
 		this.b = b;
 		this.piece = p;
+		this.boardAggiornata = this.calcolaCatture();
 	}
 	
 	public Board getBoardSenzaCatture() {
@@ -117,11 +121,29 @@ public class Mossa {
 		
 	}
 	
+	public Board getBoardAggiornata() {
+		return this.boardAggiornata;
+	}
+	
 	
 	public static int eval(Board board) {
 		//TODO
-		
+		//Guardo anche sulla trasposition table per eventuali pareggi
+		//In minmax controllo anche se le mosse sono 0, in quel caso quel giocatore ha perso
 		return (int) Double.NaN;
+	}
+
+
+	@Override
+	public int compare(Mossa o1, Mossa o2) {
+		return Integer.compare(o1.getBoardAggiornata().rookDifferenceCount(), o2.getBoardAggiornata().rookDifferenceCount());
+	}
+
+
+	@Override
+	public int compareTo(Mossa o) {
+		return Integer.compare(this.getBoardAggiornata().rookDifferenceCount(), o.getBoardAggiornata().rookDifferenceCount());
+
 	}
 	
 	

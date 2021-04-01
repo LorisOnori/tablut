@@ -1,9 +1,8 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
-import java.util.Map;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ class BoardTest {
 	
 	private HashMap<Integer,Piece> b = new HashMap<>();
 	private Board board;
-	
 	
 	
 	@BeforeEach
@@ -49,6 +47,8 @@ class BoardTest {
 		System.out.println("nord "+nord +" sud "+ sud+" est "+est+" ovest "+ovest );
 		System.out.println("numero celle disponibili rook: "+ board.numeroCaselleDisponibiliRookByPlayer(Player.BLACK));
 		System.out.println("numero direzioni disponibili rook: "+ board.numeroDirezioniRook(7, 3));
+		
+		
 
 		//assertEquals
 	}
