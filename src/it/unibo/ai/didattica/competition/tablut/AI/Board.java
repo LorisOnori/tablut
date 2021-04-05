@@ -480,24 +480,32 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		for(int r = row+1 ; r<= Board.nRow; r++) {
 			if(this.isLegalMove(p, r, column))
 				moves.add(Board.coordinateToIndex(r, column));
+			else
+				break;
 		}
 		
 		//Diminuisco le righe SUD
 		for(int r = row-1 ; r>=1; r--) {
 			if(this.isLegalMove(p, r, column))
 				moves.add(Board.coordinateToIndex(r, column));
+			else
+				break;
 		}
 		
 		//Aumento le colonne EST
-		for(int c = column+1; c <= Board.nColumns; c ++) {
+		for(int c = column+1; c <= Board.nColumns; c++) {
 			if(this.isLegalMove(p, row, c))
 				moves.add(Board.coordinateToIndex(row, c));
+			else
+				break;
 		}
 		
 		//Diminuisco le colonne OVEST
-		for(int c = column-1; c >=1; c --) {
+		for(int c = column-1; c >=1; c--) {
 			if(this.isLegalMove(p, row, c))
 				moves.add(Board.coordinateToIndex(row, c));
+			else
+				break;
 		}
 		
 		int []res = new int[moves.size()];
@@ -530,7 +538,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	//Ordino le mosse
 	//Minmax
 	public List<Mossa> getNextMovesByPlayer(Player player){
-		HashMap<Integer, Piece> newBoard = this.clone();
+		HashMap<Integer, Piece> newBoard;
 		List<Mossa> result = new ArrayList<>();
 		int []moves;
 		if(player == Player.WHITE) {
@@ -542,12 +550,18 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 					moves = this.possibleMovesByPiece(piece);
 					//System.out.println();
 					for(int m : moves) {
+						//Devo creare sempre una nuova board
+						//altrimenti i pezzi li muovo sempre sulla stessa
+						//Quindi anche in diagonale perchè vedo due mosse sulla stessa board
+						//FORSE
+						//--------------------------------- DA CONTROLLARE ---------- (anche sotto in BLACK) -----
+						newBoard = this.clone();
 						int oldPos = piece.getPosition();
-						
 						newBoard.remove(piece.getPosition());
 						piece.setPosition(m);
 						newBoard.put(m, piece);
 						result.add(new Mossa(new Board(newBoard), piece, oldPos));
+						System.out.println("m "+ m+" oldPos "+oldPos);
 					}
 				}
 			}
@@ -557,6 +571,8 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 				if(piece.getType() == Type.BLACK_ROOK) {
 					moves = this.possibleMovesByPiece(piece);
 					for(int m : moves) {
+						//FORSE
+						newBoard = this.clone();
 						int oldPos = piece.getPosition();
 						newBoard.remove(piece.getPosition());
 						piece.setPosition(m);
@@ -575,14 +591,24 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	}
 	
 	public static int[] indexToCoordinate(int index) {
+		index--;
 		int r = index / nColumns + 1 ;
-		int c = index - nRow * (r-1);
+		//r = r > Board.nRow ? r-1 : r; 
+		int c = index - nRow * (r-1) + 1;
+		//c = c > Board ? c+1 : c;
 		
 		return new int[]{r,c};
 	}
 	
 	public static int coordinateToIndex(int r, int c) {
 		return (r-1) * nColumns + c;
+	}
+	
+	public List<Piece> getAllPieces() {
+		List<Piece> ret = new ArrayList<>();
+		for(Piece p : this.board.values())
+			ret.add(p);
+		return ret;
 	}
 
 
