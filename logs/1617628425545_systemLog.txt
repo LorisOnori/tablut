@@ -1,0 +1,28 @@
+Apr 05, 2021 3:13:45 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Accensione server
+Apr 05, 2021 3:13:45 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Partita di Tablut
+Apr 05, 2021 3:13:45 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Waiting for white connection..
+Apr 05, 2021 3:13:56 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: White player connected
+Apr 05, 2021 3:13:56 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura nome player bianco in corso..
+Apr 05, 2021 3:13:57 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: White player name:	BHO
+Apr 05, 2021 3:13:57 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Waiting for Black connection..
+Apr 05, 2021 3:14:09 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Accettata connessione con client giocatore Nero
+Apr 05, 2021 3:14:10 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura nome player nero in corso..
+Apr 05, 2021 3:14:11 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Black player name:	random
+Apr 05, 2021 3:14:11 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Invio messaggio ai giocatori
+Apr 05, 2021 3:14:11 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura mossa player W in corso..
+Apr 05, 2021 3:15:11 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+WARNING: Timeout! Player W lose!
+Apr 05, 2021 3:15:11 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+WARNING: Chiusura sistema per timeout
