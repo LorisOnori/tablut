@@ -3,14 +3,13 @@ package test;
 
 import java.util.HashMap;
 
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import player.Board;
-import player.Piece;
-import player.Player;
-import player.Type;
+import it.unibo.ai.didattica.competition.tablut.AI.Board;
+import it.unibo.ai.didattica.competition.tablut.AI.Piece;
+import it.unibo.ai.didattica.competition.tablut.AI.Player;
+import it.unibo.ai.didattica.competition.tablut.AI.Type;
 
 class BoardTest {
 	
@@ -18,7 +17,7 @@ class BoardTest {
 	private Board board;
 	
 	
-	@BeforeEach
+	//@BeforeEach
 	public void setUp() throws Exception {
 		//b.put(1, new Piece(Type.WHITE_ROOK,5));
 		b.put(Board.coordinateToIndex(9,1), new Piece(Type.KING,Board.coordinateToIndex(9,1)));
@@ -31,7 +30,7 @@ class BoardTest {
 		board = new Board(b);
 	}
 	
-	@Test
+	//@Test
 	void testBoardDistances() {
 		int nord,sud,est,ovest;
 		int []pos = board.numberOfOccupiableCells(7, 1);
