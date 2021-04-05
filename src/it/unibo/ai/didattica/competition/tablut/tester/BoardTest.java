@@ -1,4 +1,4 @@
-package test;
+package it.unibo.ai.didattica.competition.tablut.tester;
 
 
 import java.util.HashMap;
