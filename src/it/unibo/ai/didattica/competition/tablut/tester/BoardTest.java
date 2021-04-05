@@ -3,10 +3,12 @@ package it.unibo.ai.didattica.competition.tablut.tester;
 
 import java.util.HashMap;
 
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import it.unibo.ai.didattica.competition.tablut.AI.Board;
+import it.unibo.ai.didattica.competition.tablut.AI.Minmax;
+import it.unibo.ai.didattica.competition.tablut.AI.Mossa;
 import it.unibo.ai.didattica.competition.tablut.AI.Piece;
 import it.unibo.ai.didattica.competition.tablut.AI.Player;
 import it.unibo.ai.didattica.competition.tablut.AI.Type;
@@ -17,7 +19,7 @@ class BoardTest {
 	private Board board;
 	
 	
-	//@BeforeEach
+	@BeforeEach
 	public void setUp() throws Exception {
 		//b.put(1, new Piece(Type.WHITE_ROOK,5));
 		b.put(Board.coordinateToIndex(9,1), new Piece(Type.KING,Board.coordinateToIndex(9,1)));
@@ -30,10 +32,10 @@ class BoardTest {
 		board = new Board(b);
 	}
 	
-	//@Test
+	@Test
 	void testBoardDistances() {
 		int nord,sud,est,ovest;
-		int []pos = board.numberOfOccupiableCells(7, 1);
+		int []pos = board.possibleMovesByPiece(board.getCell(Board.coordinateToIndex(9, 1)));
 		nord = pos[Board.NORD];
 		sud = pos[Board.SUD];
 		est = pos[Board.EST];
@@ -43,11 +45,13 @@ class BoardTest {
 		//assertEquals(2,est); //3
 		//assertEquals(2,ovest); //3
 		//assertEquals(3,board.numeroDirezioniRe());
-		System.out.println("nord "+nord +" sud "+ sud+" est "+est+" ovest "+ovest );
-		System.out.println("numero celle disponibili rook: "+ board.numeroCaselleDisponibiliRookByPlayer(Player.BLACK));
-		System.out.println("numero direzioni disponibili rook: "+ board.numeroDirezioniRook(7, 3));
+		//System.out.println("nord "+nord +" sud "+ sud+" est "+est+" ovest "+ovest );
+		//System.out.println("numero celle disponibili rook: "+ board.numeroCaselleDisponibiliRookByPlayer(Player.BLACK));
+		//System.out.println("numero direzioni disponibili rook: "+ board.numeroDirezioniRook(7, 3));
 		
-		
+		Minmax mm = new Minmax(board);
+		Mossa m = mm.iterative(Player.WHITE);
+		System.out.println(m.getOldPos() + " " + m.getNewPos());
 
 		//assertEquals
 	}

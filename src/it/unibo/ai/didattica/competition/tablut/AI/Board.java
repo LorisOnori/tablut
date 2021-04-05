@@ -97,7 +97,9 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	public Board(HashMap<Integer,Piece> board) {
 		this.board = board;
-	
+		//this.board = new HashMap<>();
+		//for(int k : board.keySet())
+		//	this.board.put(k, board.get(k));
 		//TODO magari non stringa ma direttamente la mappa
 		this.updateBoard();
 		
@@ -159,16 +161,14 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	}
 	
 	public Piece getCell(int i,int j) {
-		int num = i * nColumns + j;
-		if(this.board.containsKey(num))
-			return board.get(num);
-		else
-			return new Piece(Type.EMPTY,i,j);
+		return this.getCell(Board.coordinateToIndex(i, j));
 	}
 	
 	public Piece getCell(int p) {
-		int []pos = Board.indexToCoordinate(p);
-		return this.getCell(pos[0], pos[1]);
+		if(!this.board.containsKey(p))
+			return new Piece(Type.EMPTY, p);
+		else
+			return this.board.get(p);
 	}
 	
 	// 1 to Row
@@ -455,10 +455,10 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		if(this.board.containsKey(position))
 			return false;
 		
-		if(Board.isForbidden(position) && p.canMooveInsideForbiddenArea())
-			return true;
-		else 
+		if(Board.isForbidden(position) && !p.canMooveInsideForbiddenArea())
 			return false;
+		else 
+			return true;
 		
 	}
 	
@@ -483,7 +483,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		}
 		
 		//Diminuisco le righe SUD
-		for(int r = row-1 ; r<= Board.nRow; r--) {
+		for(int r = row-1 ; r>=1; r--) {
 			if(this.isLegalMove(p, r, column))
 				moves.add(Board.coordinateToIndex(r, column));
 		}
@@ -495,7 +495,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		}
 		
 		//Diminuisco le colonne OVEST
-		for(int c = column-1; c <= Board.nColumns; c ++) {
+		for(int c = column-1; c >=1; c --) {
 			if(this.isLegalMove(p, row, c))
 				moves.add(Board.coordinateToIndex(row, c));
 		}
@@ -534,10 +534,13 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		List<Mossa> result = new ArrayList<>();
 		int []moves;
 		if(player == Player.WHITE) {
+			//System.out.println(this.board.keySet());
 			for(Integer p: this.board.keySet()) {
 				Piece piece = getCell(p);
+				System.out.println("Piece "+piece.getType()+ " coord r " + piece.getRow()+ " c "+piece.getColumn());
 				if(piece.getType() == Type.WHITE_ROOK || piece.getType() == Type.KING) {
 					moves = this.possibleMovesByPiece(piece);
+					//System.out.println();
 					for(int m : moves) {
 						int oldPos = piece.getPosition();
 						

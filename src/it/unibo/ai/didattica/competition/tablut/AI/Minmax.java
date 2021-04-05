@@ -22,7 +22,7 @@ public class Minmax {
 	private static final int MAX = Integer.MAX_VALUE;
 	private static final int MIN = Integer.MIN_VALUE;
 	private static final int EVAL = 0;
-	private static final int DEPTH = 1;
+	private static final int DEPTH_INDEX = 1;
 	private static final int TEST_DEPTH = 2;
 	
 	//Posso svuotarla quando un pezzo viene mangiato
@@ -63,6 +63,7 @@ public class Minmax {
 		//Adesso considero solo la differenza dei pezzi
 		
 		//Sort --> Controllo se salvando la eval completa sulla mappa con livallo 0 guadagno
+		//System.out.println();
 		Collections.sort(mosse);
 		if(Player.WHITE == player)
 			Collections.reverse(mosse);
@@ -73,6 +74,7 @@ public class Minmax {
 		
 		//Da parallelizzare e ottimizzare con l'ordinamento delle mosse e un db per i risultati parziali e finali
 		for(int i= 0; i<depth; i++) { // -----> Cambiare la profondit� con il tempo
+			System.out.println("Iterative depth "+i);
 			for(Mossa m : mosse){
 				
 				val = this.minmax(m.getBoardAggiornata(), i, MIN, MAX, player, i);
@@ -114,8 +116,8 @@ public class Minmax {
 
 	
 	public int minmax(Board brd, int depth,int  alpha, int beta, Player player, int mainDepth) {
-	
-		if(risultati.containsKey(brd) && risultati.get(brd)[DEPTH] >= depth)
+		//System.out.println(depth);
+		if(risultati.containsKey(brd) && risultati.get(brd)[DEPTH_INDEX] >= depth)
 			return risultati.get(brd)[EVAL];
 		else if (depth == 0) {
 			int ev =  Mossa.eval(brd);
