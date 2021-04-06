@@ -22,10 +22,10 @@ class BoardTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		//b.put(1, new Piece(Type.WHITE_ROOK,5));
-		b.put(Board.coordinateToIndex(9,1), new Piece(Type.KING,Board.coordinateToIndex(9,1)));
+		b.put(Board.coordinateToIndex(4,2), new Piece(Type.KING,Board.coordinateToIndex(4,2)));
 		//b.put(Board.coordinateToIndex(9, 7), new Piece(Type.WHITE_ROOK,Board.coordinateToIndex(9, 7)));
 		//b.put(Board.coordinateToIndex(7, 1), new Piece(Type.WHITE_ROOK,Board.coordinateToIndex(7, 1)));
-		b.put(Board.coordinateToIndex(7, 3), new Piece(Type.BLACK_ROOK,Board.coordinateToIndex(7, 3)));
+		b.put(Board.coordinateToIndex(4, 6), new Piece(Type.BLACK_ROOK,Board.coordinateToIndex(4, 6)));
 //		b.put(Board.coordinateToIndex(3, 1), new Piece(Type.BLACK_ROOK,Board.coordinateToIndex(3, 1)));
 
 		
@@ -53,10 +53,10 @@ class BoardTest {
 //		for(int i : a)
 //			System.out.println(i+" = "+Board.indexToCoordinate(i)[0]+" "+ Board.indexToCoordinate(i)[1]);
 //		
-		Minmax mm = new Minmax(board);
+		Minmax mm = Minmax.getInstance();
 //		for(Piece p: board.getAllPieces())
 //			System.out.println("pos "+ p.getPosition() + " r "+ p.getRow() +  " c "+ p.getColumn());
-		Mossa m = mm.iterative(Player.WHITE);
+		Mossa m = mm.iterative(board, Player.BLACK);
 		System.out.println(m.getOldPos() + " " + m.getNewPos());
 		
 //		for(int i: pos) {

@@ -24,29 +24,74 @@ public class Minmax {
 	private static final int EVAL = 0;
 	private static final int DEPTH_INDEX = 1;
 	private static final int TEST_DEPTH = 2;
-	
+	private static Minmax INSTANCE = null;
+	private static final int NUMERO_TORRI_BIANCHE = 8;
+	private static final int NUMERO_TORRI_NERE = 16;
 	//Posso svuotarla quando un pezzo viene mangiato
-	private Map<Board, int[]> risultati;
+	private static Map<Board, int[]> traspositionTable;
+	private static Map<Board, Integer> posizioniPassate;
+	private static int torriBianche = Minmax.NUMERO_TORRI_BIANCHE;
+	private static int torriNere = Minmax.NUMERO_TORRI_NERE;
+	
+	// HEURISTIC
+
+	private static final int W_DIFFERENZA_PEZZI = 20;
+	private static final int W_DIREZIONI_RE = 2;
+	private static final int W_POSIZIONI_OCC_RE = 5;
+	private static final int W_DISTANZA_GOAL = 3;
+	private static final int W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 4;
+	private static final int W_POSIZIONI_OCCUPABILI_TORRI_NERO = 4;
+	private static final int W_DIREZIONI_TORRI_BIANCO = 4;
+	private static final int W_DIREZIONI_TORRI_NERO = 4;
+	private static final int W_BLACK_AROUND_KING = 5;
 	
 	
 	
-	public Minmax(Board board) {
-		risultati = new HashMap<>();
-		this.board = board;
-	}
 	
-	public void resetTranspositionTable() {
-		this.risultati = new HashMap<>();
-	}
-	
-	public Mossa iterative(Turn t) {
-		if(t == Turn.BLACK)
-			return this.iterative(Player.BLACK);
+	public static Minmax getInstance() {
+		if(INSTANCE == null)
+			return new Minmax();
 		else 
-			return this.iterative(Player.WHITE);
+			return INSTANCE;
 	}
 	
-	public Mossa iterative(Player player) {
+	private Minmax() {
+		traspositionTable = new HashMap<>();
+		posizioniPassate = new HashMap<>();
+	}
+	
+	public static void resetTranspositionTable() {
+		traspositionTable = new HashMap<>();
+	}
+	
+	public static void resetPosizioniPassate() {
+		posizioniPassate = new HashMap<>();
+	}
+	
+	public  Mossa iterative(Board b, Turn t) {
+		if(t == Turn.BLACK)
+			return iterative(b, Player.BLACK);
+		else 
+			return iterative(b, Player.WHITE);
+	}
+	
+	public Mossa iterative(Board board, Player player) {
+		
+		int tb = board.getWhiteRooksCount();
+		int tn = board.getBlackRooksCount();
+		
+		//Se catturo un pezzo allora le nuove posizioni saranno sicuramente diverse
+		//Così come quelle valutate
+		//Libero la memoria
+		if(tb != torriBianche || tn != torriNere) {
+			resetPosizioniPassate();
+			resetTranspositionTable();
+			torriBianche = tb;
+			torriNere = tn;
+		}
+		
+		posizioniPassate.put(board, 1);
+		
 		
 		//Prendo il tempo adesso provo con profonditï¿½
 		int depth = TEST_DEPTH;
@@ -77,7 +122,7 @@ public class Minmax {
 			System.out.println("Iterative depth "+i);
 			for(Mossa m : mosse){
 				
-				val = this.minmax(m.getBoardAggiornata(), i, MIN, MAX, player, i);
+				val = minmax(m.getBoardAggiornata(), i, MIN, MAX, player, i);
 				
 				if(player == Player.WHITE) {
 					if(val > best ) {
@@ -117,11 +162,11 @@ public class Minmax {
 	
 	public int minmax(Board brd, int depth,int  alpha, int beta, Player player, int mainDepth) {
 		//System.out.println(depth);
-		if(risultati.containsKey(brd) && risultati.get(brd)[DEPTH_INDEX] >= depth)
-			return risultati.get(brd)[EVAL];
+		if(traspositionTable.containsKey(brd) && traspositionTable.get(brd)[DEPTH_INDEX] >= depth)
+			return traspositionTable.get(brd)[EVAL];
 		else if (depth == 0) {
-			int ev =  Mossa.eval(brd);
-			risultati.put(brd, new int[] {ev, mainDepth});
+			int ev =  eval(brd);
+			traspositionTable.put(brd, new int[] {ev, mainDepth});
 			return ev;
 		}
 		int value;
@@ -134,6 +179,9 @@ public class Minmax {
 			
 			
 			List<Mossa> mosse= brd.getNextMovesByPlayer(Player.WHITE);
+			//nessuna mossa possibile --> NERO vince
+			if(mosse == null)
+				return MIN;
 			Collections.sort(mosse);
 			Collections.reverse(mosse);
 			for(Mossa m: mosse) {
@@ -148,7 +196,10 @@ public class Minmax {
 		}else {
 			//BLACK MIN
 			int bestVal = MAX;
-			List<Mossa> mosse= brd.getNextMovesByPlayer(Player.WHITE);
+			List<Mossa> mosse= brd.getNextMovesByPlayer(Player.BLACK);
+			//Se mosse == null --> Non si può fare nessuna mossa quindi NERO perde
+			if(mosse == null)
+				return MAX;
 			Collections.sort(mosse);
 			for(Mossa m: mosse) {
 				//Board b = m.calcolaCatture();
@@ -164,16 +215,43 @@ public class Minmax {
 	}
 	
 	//Test
-	public int eval() {
-		return this.eval(20,2,5,3,4,4,4,4,5);
-	}
+
 		
 	//Nella genereazione di mosse (non qui) posso valutare tutte le mosse e ordinarle in base alla differenza pezzi che dovrebbe essere l'indice piï¿½ importate
 	//Minmax quindi esplora prima queste mosse e poi le altre.
 	//Valuta la posizione corrente
-	public int eval(int wDifferenzaPezzi, int wDirezioniRe, int wPosizioniOccRe, int wDistanzaDalGoal, int wPosizioniOccupabiliTorriBianco,
-					int wPosizioniOccupabiliTorriNero , int wDirezioniTorriBianco, int wDirezioniTorriNero, int wBlackAroundKing) {
+	public int eval(Board brd) {
 		//TODO 
+		
+		//WHITE WIN
+		for(int []p : Board.finalCellsSet) {
+			if(brd.kindPosition == Board.coordinateToIndex(p[0], p[1]))
+				return MAX;
+		}
+		//BLACK WIN
+		
+		//ultimo controllo se:
+		//f k b
+		//b k f
+		//e dall'alto in basso
+		int []k = Board.indexToCoordinate(brd.kindPosition);
+		if(brd.blackAroundKing() == 4)
+			return MIN;
+		else if(brd.blackAroundKing() == 3 && (brd.kindPosition == Board.NORD_CENTER_POS || brd.kindPosition == Board.EST_CENTER_POS || brd.kindPosition == Board.SUD_CENTER_POS || brd.kindPosition == Board.OVEST_CENTER_POS))
+			return MIN;
+		else if(k[0] > 1 && brd.getCell(k[0]+1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]-1, k[1])  
+				||  k[0] < 9 && brd.getCell(k[0]-1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]+1, k[1]) 
+				||  k[1] > 1 && brd.getCell(k[0], k[1]+1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]-1)  
+				||  k[1] < 9 && brd.getCell(k[0], k[1]-1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]+1) ){
+			return MIN;
+		}
+			
+			//DRAW
+		if(posizioniPassate.containsKey(brd))
+			return 0;
+		
+		
+		
 		
 		
 		/*
@@ -197,22 +275,22 @@ public class Minmax {
 		 */
 		
 		
-		int []rooks = this.board.getRooksByPlayer(Player.WHITE);
+		int []rooks = brd.getRooksByPlayer(Player.WHITE);
 		int dirWhite = 0;
 		int dirBlack = 0;
 		for(int r : rooks) {
-			dirWhite += this.board.numeroDirezioniRook(r);
+			dirWhite += brd.numeroDirezioniRook(r);
 		}
 		
-		rooks = this.board.getRooksByPlayer(Player.BLACK);
+		rooks = brd.getRooksByPlayer(Player.BLACK);
 		for(int r : rooks) {
-			dirBlack += this.board.numeroDirezioniRook(r);
+			dirBlack += brd.numeroDirezioniRook(r);
 		}
 		
-		return wDifferenzaPezzi * this.board.rookDifferenceCount() + wDirezioniRe * this.board.numeroDirezioniRe() + wPosizioniOccRe * this.board.numeroCaselleDiponibiliKing() 
-				+ wDistanzaDalGoal * this.board.manhattamDistanceToClosestGoal() + wPosizioniOccupabiliTorriBianco * this.board.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
-				+ wPosizioniOccupabiliTorriNero * this.board.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)+ wDirezioniTorriBianco * dirWhite 
-				+ wDirezioniTorriNero * dirBlack + wBlackAroundKing * this.board.blackAroundKing();
+		return W_DIFFERENZA_PEZZI * brd.rookDifferenceCount() + W_DIREZIONI_RE * brd.numeroDirezioniRe() + W_POSIZIONI_OCC_RE * brd.numeroCaselleDiponibiliKing() 
+				+ W_DISTANZA_GOAL * brd.manhattamDistanceToClosestGoal() + W_POSIZIONI_OCCUPABILI_TORRI_BIANCO * brd.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
+				+ W_POSIZIONI_OCCUPABILI_TORRI_NERO * brd.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
+				+ W_DIREZIONI_TORRI_NERO * dirBlack + W_BLACK_AROUND_KING * brd.blackAroundKing();
 	}
 	
 	

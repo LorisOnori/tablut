@@ -32,6 +32,10 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	
 	public final static int [] center = {5,5};
+	public final static int EST_CENTER_POS = 42;
+	public final static int OVEST_CENTER_POS = 40;
+	public final static int SUD_CENTER_POS = 32;
+	public final static int NORD_CENTER_POS = 50;
 	
 	public final static int [][] forbiddenCells = {{1,4},{1,5},{1,6},{2,5},
 										{4,1},{5,1},{6,1},{5,2},
@@ -558,10 +562,13 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 						newBoard = this.clone();
 						int oldPos = piece.getPosition();
 						newBoard.remove(piece.getPosition());
-						piece.setPosition(m);
-						newBoard.put(m, piece);
-						result.add(new Mossa(new Board(newBoard), piece, oldPos));
-						System.out.println("m "+ m+" oldPos "+oldPos);
+						//errore nuovo pezzo
+						//piece.setPosition(m);
+						
+						Piece newPiece = new Piece(piece.getType(), m);
+						newBoard.put(m, newPiece);
+						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
+						System.out.println("oldPos "+oldPos+" m "+ m);
 					}
 				}
 			}
@@ -574,10 +581,11 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 						//FORSE
 						newBoard = this.clone();
 						int oldPos = piece.getPosition();
+						Piece newPiece = new Piece(piece.getType(), m);
 						newBoard.remove(piece.getPosition());
-						piece.setPosition(m);
-						newBoard.put(m, piece);
-						result.add(new Mossa(new Board(newBoard), piece, oldPos));
+						//piece.setPosition(m);
+						newBoard.put(m, newPiece);
+						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
 					}
 				}
 			}

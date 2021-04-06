@@ -71,6 +71,10 @@ public class Piece {
 		}
 	}
 	
+	public Piece clone() {
+		return new Piece(this.type, this.position);
+	}
+	
 	
 
 }
