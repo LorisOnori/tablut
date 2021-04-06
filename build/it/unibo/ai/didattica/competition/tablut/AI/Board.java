@@ -14,7 +14,7 @@ import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	public final static int NO_PIECE = -1;
-	public final static int BLACK_ROOK_NUMBER = 12;
+	public final static int BLACK_ROOK_NUMBER = 16;
 	public final static int WHITE_ROOK_NUMBER = 8;
 	public final static int NORD = 0;
 	public final static int SUD = 1;
@@ -32,6 +32,10 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	
 	public final static int [] center = {5,5};
+	public final static int EST_CENTER_POS = 42;
+	public final static int OVEST_CENTER_POS = 40;
+	public final static int SUD_CENTER_POS = 32;
+	public final static int NORD_CENTER_POS = 50;
 	
 	public final static int [][] forbiddenCells = {{1,4},{1,5},{1,6},{2,5},
 										{4,1},{5,1},{6,1},{5,2},
@@ -60,12 +64,13 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		for(int i = 0; i<nRow; i++) {
 			for(int j = 0 ; j < nColumns ; j++) {
 				Pawn p = state.getPawn(i, j);
+				//System.out.println(p);
 				if(p == Pawn.BLACK) {
-					board.put(Board.coordinateToIndex(i, j), new Piece(Type.BLACK_ROOK, i, j));
+					board.put(Board.coordinateToIndex(i+1, j+1), new Piece(Type.BLACK_ROOK, i+1, j+1));
 				}else if(p == Pawn.WHITE) {
-					board.put(Board.coordinateToIndex(i, j), new Piece(Type.WHITE_ROOK, i, j));
+					board.put(Board.coordinateToIndex(i+1, j+1), new Piece(Type.WHITE_ROOK, i+1, j+1));
 				}else if(p == Pawn.KING) {
-					board.put(Board.coordinateToIndex(i, j), new Piece(Type.KING, i, j));
+					board.put(Board.coordinateToIndex(i+1, j+1), new Piece(Type.KING, i+1, j+1));
 				}
 				
 			}
@@ -97,7 +102,9 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	public Board(HashMap<Integer,Piece> board) {
 		this.board = board;
-	
+		//this.board = new HashMap<>();
+		//for(int k : board.keySet())
+		//	this.board.put(k, board.get(k));
 		//TODO magari non stringa ma direttamente la mappa
 		this.updateBoard();
 		
@@ -159,16 +166,14 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	}
 	
 	public Piece getCell(int i,int j) {
-		int num = i * nColumns + j;
-		if(this.board.containsKey(num))
-			return board.get(num);
-		else
-			return new Piece(Type.EMPTY,i,j);
+		return this.getCell(Board.coordinateToIndex(i, j));
 	}
 	
 	public Piece getCell(int p) {
-		int []pos = Board.indexToCoordinate(p);
-		return this.getCell(pos[0], pos[1]);
+		if(!this.board.containsKey(p))
+			return new Piece(Type.EMPTY, p);
+		else
+			return this.board.get(p);
 	}
 	
 	// 1 to Row
@@ -227,53 +232,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	}
 	
 	//public getAllPieces() 	
-	
-	//Nella genereazione di mosse (non qui) posso valutare tutte le mosse e ordinarle in base alla differenza pezzi che dovrebbe essere l'indice piï¿½ importate
-	//Minmax quindi esplora prima queste mosse e poi le altre.
-	//Valuta la posizione corrente
-	public int eval(int wDifferenzaPezzi, int wDirezioniRe, int wPosizioniOccRe, int wDistanzaDalGoal, int wPosizioniOccupabiliTorriBianco,
-					int wPosizioniOccupabiliTorriNero , int wDirezioniTorriBianco, int wDirezioniTorriNero, int wBlackAroundKing) {
-		//TODO 
-		
-		
-		/*
-		 * 
-		 * Una volta scelta una mossa controllo le catture possibili
-		 * Quindi valuto questa seconda tabella con le catture o vincita di bianco o nero
-		 * Quindi mando lo stato
-		 * Quindi ricevo lo stato aggiornato senza la pedina catturata
-		 */
-		
-		
-		
-		
-		/*
-		 * Numero di pezzi
-		 * Direzioni del re
-		 * Posizioni occupabili dal re
-		 * Distanza del re dal goal
-		 * Posizioni occupabili dalle torri
-		 * Direzioni in cui le torri si possono muovere
-		 */
-		
-		
-		int []rooks = this.getRooksByPlayer(Player.WHITE);
-		int dirWhite = 0;
-		int dirBlack = 0;
-		for(int r : rooks) {
-			dirWhite += this.numeroDirezioniRook(r);
-		}
-		
-		rooks = this.getRooksByPlayer(Player.BLACK);
-		for(int r : rooks) {
-			dirBlack += this.numeroDirezioniRook(r);
-		}
-		
-		return wDifferenzaPezzi * this.rookDifferenceCount() + wDirezioniRe * this.numeroDirezioniRe() + wPosizioniOccRe * this.numeroCaselleDiponibiliKing() 
-				+ wDistanzaDalGoal * this.manhattamDistanceToClosestGoal() + wPosizioniOccupabiliTorriBianco * this.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
-				+ wPosizioniOccupabiliTorriNero * this.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)+ wDirezioniTorriBianco * dirWhite 
-				+ wDirezioniTorriNero * dirBlack + wBlackAroundKing * this.blackAroundKing();
-	}
+
 	
 	public int getWhiteRooksCount() {
 		int val = 0;
@@ -388,10 +347,12 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		
 		int index = 0;
 		int[] position = null;
+		//List<Integer> pos = new ArrayList<>();
 		if(player == Player.WHITE) {
 			position = new int[Board.WHITE_ROOK_NUMBER];
 			for(Piece p : this.board.values()) {
 				if(p.getType() == Type.WHITE_ROOK) {
+					//pos.add(p.getPosition());
 					position[index] = p.getPosition();
 					index++;
 				}
@@ -501,10 +462,10 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		if(this.board.containsKey(position))
 			return false;
 		
-		if(Board.isForbidden(position) && p.canMooveInsideForbiddenArea())
-			return true;
-		else 
+		if(Board.isForbidden(position) && !p.canMooveInsideForbiddenArea())
 			return false;
+		else 
+			return true;
 		
 	}
 	
@@ -526,24 +487,32 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		for(int r = row+1 ; r<= Board.nRow; r++) {
 			if(this.isLegalMove(p, r, column))
 				moves.add(Board.coordinateToIndex(r, column));
+			else
+				break;
 		}
 		
 		//Diminuisco le righe SUD
-		for(int r = row-1 ; r<= Board.nRow; r--) {
+		for(int r = row-1 ; r>=1; r--) {
 			if(this.isLegalMove(p, r, column))
 				moves.add(Board.coordinateToIndex(r, column));
+			else
+				break;
 		}
 		
 		//Aumento le colonne EST
-		for(int c = column+1; c <= Board.nColumns; c ++) {
+		for(int c = column+1; c <= Board.nColumns; c++) {
 			if(this.isLegalMove(p, row, c))
 				moves.add(Board.coordinateToIndex(row, c));
+			else
+				break;
 		}
 		
 		//Diminuisco le colonne OVEST
-		for(int c = column-1; c <= Board.nColumns; c ++) {
+		for(int c = column-1; c >=1; c--) {
 			if(this.isLegalMove(p, row, c))
 				moves.add(Board.coordinateToIndex(row, c));
+			else
+				break;
 		}
 		
 		int []res = new int[moves.size()];
@@ -576,21 +545,33 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	//Ordino le mosse
 	//Minmax
 	public List<Mossa> getNextMovesByPlayer(Player player){
-		HashMap<Integer, Piece> newBoard = this.clone();
+		HashMap<Integer, Piece> newBoard;
 		List<Mossa> result = new ArrayList<>();
 		int []moves;
 		if(player == Player.WHITE) {
+			//System.out.println(this.board.keySet());
 			for(Integer p: this.board.keySet()) {
 				Piece piece = getCell(p);
+				//System.out.println("Piece "+piece.getType()+ " coord r " + piece.getRow()+ " c "+piece.getColumn());
 				if(piece.getType() == Type.WHITE_ROOK || piece.getType() == Type.KING) {
 					moves = this.possibleMovesByPiece(piece);
+					//System.out.println();
 					for(int m : moves) {
+						//Devo creare sempre una nuova board
+						//altrimenti i pezzi li muovo sempre sulla stessa
+						//Quindi anche in diagonale perchè vedo due mosse sulla stessa board
+						//FORSE
+						//--------------------------------- DA CONTROLLARE ---------- (anche sotto in BLACK) -----
+						newBoard = this.clone();
 						int oldPos = piece.getPosition();
-						
 						newBoard.remove(piece.getPosition());
-						piece.setPosition(m);
-						newBoard.put(m, piece);
-						result.add(new Mossa(new Board(newBoard), piece, oldPos));
+						//errore nuovo pezzo
+						//piece.setPosition(m);
+						
+						Piece newPiece = new Piece(piece.getType(), m);
+						newBoard.put(m, newPiece);
+						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
+						//System.out.println("oldPos "+oldPos+" m "+ m);
 					}
 				}
 			}
@@ -600,11 +581,14 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 				if(piece.getType() == Type.BLACK_ROOK) {
 					moves = this.possibleMovesByPiece(piece);
 					for(int m : moves) {
+						//FORSE
+						newBoard = this.clone();
 						int oldPos = piece.getPosition();
+						Piece newPiece = new Piece(piece.getType(), m);
 						newBoard.remove(piece.getPosition());
-						piece.setPosition(m);
-						newBoard.put(m, piece);
-						result.add(new Mossa(new Board(newBoard), piece, oldPos));
+						//piece.setPosition(m);
+						newBoard.put(m, newPiece);
+						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
 					}
 				}
 			}
@@ -618,14 +602,24 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	}
 	
 	public static int[] indexToCoordinate(int index) {
+		index--;
 		int r = index / nColumns + 1 ;
-		int c = index - nRow * (r-1);
+		//r = r > Board.nRow ? r-1 : r; 
+		int c = index - nRow * (r-1) + 1;
+		//c = c > Board ? c+1 : c;
 		
 		return new int[]{r,c};
 	}
 	
 	public static int coordinateToIndex(int r, int c) {
 		return (r-1) * nColumns + c;
+	}
+	
+	public List<Piece> getAllPieces() {
+		List<Piece> ret = new ArrayList<>();
+		for(Piece p : this.board.values())
+			ret.add(p);
+		return ret;
 	}
 
 

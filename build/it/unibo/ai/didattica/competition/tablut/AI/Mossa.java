@@ -23,6 +23,10 @@ public class Mossa implements Comparator<Mossa>, Comparable<Mossa>{
 		this.oldPos = oldPos;
 		this.boardAggiornata = this.calcolaCatture();
 	}
+	
+	public Mossa clone() {
+		return new Mossa(this.b, this.piece, this.oldPos);
+	}
 
 	public Board getBoardSenzaCatture() {
 		return this.b;

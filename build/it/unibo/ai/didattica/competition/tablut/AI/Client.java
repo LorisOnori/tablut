@@ -81,6 +81,7 @@ public class Client extends TablutClient{
 	private void faiIlClient(Turn turnoMio, Turn turnoNemico, String s, String s2) {
 
 		Action action;
+		Minmax mm = Minmax.getInstance();
 		while (true) {
 
 			try{
@@ -97,13 +98,14 @@ public class Client extends TablutClient{
 
 					/*****ACTION*****/
 					long start = System.currentTimeMillis();
-					Minmax mm = new Minmax(new Board(getCurrentState().clone()));
 					
-					Mossa res = mm.iterative(getCurrentState().getTurn());
+					System.out.println("START");
+					Mossa res = mm.iterative(new Board(getCurrentState().clone()), turnoMio);
+					System.out.println("MOSSA DA "+res.getOldPos()+ " A "+res.getNewPos());
 					//a1 - a9 --- i1 - i9
 					int []old = Board.indexToCoordinate(res.getOldPos());
 					int []n = Board.indexToCoordinate(res.getNewPos());
-					action = new Action(this.getCurrentState().getBox(old[0], old[1]), this.getCurrentState().getBox(n[0], n[1]), this.getCurrentState().getTurn());
+					action = new Action(this.getCurrentState().getBox(old[0]-1, old[1]-1), this.getCurrentState().getBox(n[0]-1, n[1]-1), this.getCurrentState().getTurn());
 
 					this.write(action);
 

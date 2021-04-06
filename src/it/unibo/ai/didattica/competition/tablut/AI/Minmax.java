@@ -36,14 +36,14 @@ public class Minmax {
 	// HEURISTIC
 
 	private static final int W_DIFFERENZA_PEZZI = 20;
-	private static final int W_DIREZIONI_RE = 2;
-	private static final int W_POSIZIONI_OCC_RE = 5;
-	private static final int W_DISTANZA_GOAL = 3;
-	private static final int W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 4;
-	private static final int W_POSIZIONI_OCCUPABILI_TORRI_NERO = 4;
-	private static final int W_DIREZIONI_TORRI_BIANCO = 4;
-	private static final int W_DIREZIONI_TORRI_NERO = 4;
-	private static final int W_BLACK_AROUND_KING = 5;
+	private static final int W_DIREZIONI_RE = 3;
+	private static final int W_POSIZIONI_OCC_RE = 8;
+	private static final int W_DISTANZA_GOAL = 10;
+	private static final int W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 9;
+	private static final int W_POSIZIONI_OCCUPABILI_TORRI_NERO = 6;
+	private static final int W_DIREZIONI_TORRI_BIANCO = 2;
+	private static final int W_DIREZIONI_TORRI_NERO = 2;
+	private static final int W_BLACK_AROUND_KING = 15;
 	
 	
 	
@@ -287,10 +287,15 @@ public class Minmax {
 			dirBlack += brd.numeroDirezioniRook(r);
 		}
 		
-		return W_DIFFERENZA_PEZZI * brd.rookDifferenceCount() + W_DIREZIONI_RE * brd.numeroDirezioniRe() + W_POSIZIONI_OCC_RE * brd.numeroCaselleDiponibiliKing() 
-				+ W_DISTANZA_GOAL * brd.manhattamDistanceToClosestGoal() + W_POSIZIONI_OCCUPABILI_TORRI_BIANCO * brd.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
-				+ W_POSIZIONI_OCCUPABILI_TORRI_NERO * brd.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
-				+ W_DIREZIONI_TORRI_NERO * dirBlack + W_BLACK_AROUND_KING * brd.blackAroundKing();
+		return W_DIFFERENZA_PEZZI * brd.rookDifferenceCount() 
+				+ W_DIREZIONI_RE * brd.numeroDirezioniRe() 
+				+ W_POSIZIONI_OCC_RE * brd.numeroCaselleDiponibiliKing() 
+				+ W_DISTANZA_GOAL * brd.manhattamDistanceToClosestGoal() 
+				+ W_POSIZIONI_OCCUPABILI_TORRI_BIANCO * brd.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
+				- W_POSIZIONI_OCCUPABILI_TORRI_NERO * brd.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)
+				+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
+				- W_DIREZIONI_TORRI_NERO * dirBlack 
+				- W_BLACK_AROUND_KING * brd.blackAroundKing();
 	}
 	
 	
