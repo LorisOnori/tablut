@@ -23,7 +23,7 @@ public class Minmax {
 	private static final int MIN = Integer.MIN_VALUE;
 	private static final int EVAL = 0;
 	private static final int DEPTH_INDEX = 1;
-	private static final int TEST_DEPTH = 2;
+	private static final int TEST_DEPTH = 3;
 	private static Minmax INSTANCE = null;
 	private static final int NUMERO_TORRI_BIANCHE = 8;
 	private static final int NUMERO_TORRI_NERE = 16;

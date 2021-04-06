@@ -3,8 +3,8 @@ package it.unibo.ai.didattica.competition.tablut.tester;
 
 import java.util.HashMap;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
 
 import it.unibo.ai.didattica.competition.tablut.AI.Board;
 import it.unibo.ai.didattica.competition.tablut.AI.Minmax;
@@ -19,7 +19,7 @@ class BoardTest {
 	private Board board;
 	
 	
-	@BeforeEach
+	//@BeforeEach
 	public void setUp() throws Exception {
 		//b.put(1, new Piece(Type.WHITE_ROOK,5));
 		b.put(Board.coordinateToIndex(4,2), new Piece(Type.KING,Board.coordinateToIndex(4,2)));
@@ -32,10 +32,10 @@ class BoardTest {
 		board = new Board(b);
 	}
 	
-	@Test
+	//@Test
 	void testBoardDistances() {
 		int nord,sud,est,ovest;
-		int []pos = board.possibleMovesByPiece(board.getCell(Board.coordinateToIndex(9, 1)));
+		//int []pos = board.possibleMovesByPiece(board.getCell(Board.coordinateToIndex(9, 1)));
 //		nord = pos[Board.NORD];
 //		sud = pos[Board.SUD];
 //		est = pos[Board.EST];
@@ -56,7 +56,7 @@ class BoardTest {
 		Minmax mm = Minmax.getInstance();
 //		for(Piece p: board.getAllPieces())
 //			System.out.println("pos "+ p.getPosition() + " r "+ p.getRow() +  " c "+ p.getColumn());
-		Mossa m = mm.iterative(board, Player.BLACK);
+		Mossa m = mm.iterative(board, Player.WHITE);
 		System.out.println(m.getOldPos() + " " + m.getNewPos());
 		
 //		for(int i: pos) {

@@ -14,7 +14,7 @@ import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	public final static int NO_PIECE = -1;
-	public final static int BLACK_ROOK_NUMBER = 12;
+	public final static int BLACK_ROOK_NUMBER = 16;
 	public final static int WHITE_ROOK_NUMBER = 8;
 	public final static int NORD = 0;
 	public final static int SUD = 1;
@@ -64,12 +64,13 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		for(int i = 0; i<nRow; i++) {
 			for(int j = 0 ; j < nColumns ; j++) {
 				Pawn p = state.getPawn(i, j);
+				//System.out.println(p);
 				if(p == Pawn.BLACK) {
-					board.put(Board.coordinateToIndex(i, j), new Piece(Type.BLACK_ROOK, i, j));
+					board.put(Board.coordinateToIndex(i+1, j+1), new Piece(Type.BLACK_ROOK, i+1, j+1));
 				}else if(p == Pawn.WHITE) {
-					board.put(Board.coordinateToIndex(i, j), new Piece(Type.WHITE_ROOK, i, j));
+					board.put(Board.coordinateToIndex(i+1, j+1), new Piece(Type.WHITE_ROOK, i+1, j+1));
 				}else if(p == Pawn.KING) {
-					board.put(Board.coordinateToIndex(i, j), new Piece(Type.KING, i, j));
+					board.put(Board.coordinateToIndex(i+1, j+1), new Piece(Type.KING, i+1, j+1));
 				}
 				
 			}
@@ -346,10 +347,12 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		
 		int index = 0;
 		int[] position = null;
+		//List<Integer> pos = new ArrayList<>();
 		if(player == Player.WHITE) {
 			position = new int[Board.WHITE_ROOK_NUMBER];
 			for(Piece p : this.board.values()) {
 				if(p.getType() == Type.WHITE_ROOK) {
+					//pos.add(p.getPosition());
 					position[index] = p.getPosition();
 					index++;
 				}
@@ -549,7 +552,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			//System.out.println(this.board.keySet());
 			for(Integer p: this.board.keySet()) {
 				Piece piece = getCell(p);
-				System.out.println("Piece "+piece.getType()+ " coord r " + piece.getRow()+ " c "+piece.getColumn());
+				//System.out.println("Piece "+piece.getType()+ " coord r " + piece.getRow()+ " c "+piece.getColumn());
 				if(piece.getType() == Type.WHITE_ROOK || piece.getType() == Type.KING) {
 					moves = this.possibleMovesByPiece(piece);
 					//System.out.println();
@@ -568,7 +571,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 						Piece newPiece = new Piece(piece.getType(), m);
 						newBoard.put(m, newPiece);
 						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
-						System.out.println("oldPos "+oldPos+" m "+ m);
+						//System.out.println("oldPos "+oldPos+" m "+ m);
 					}
 				}
 			}
