@@ -57,6 +57,7 @@ class BoardTest {
 //		for(Piece p: board.getAllPieces())
 //			System.out.println("pos "+ p.getPosition() + " r "+ p.getRow() +  " c "+ p.getColumn());
 		Mossa m = mm.iterative(board, Player.WHITE);
+		System.out.println("RITORNATO");
 		System.out.println(m.getOldPos() + " " + m.getNewPos());
 		
 //		for(int i: pos) {

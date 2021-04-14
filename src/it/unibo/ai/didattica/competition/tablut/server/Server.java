@@ -118,7 +118,8 @@ public class Server implements Runnable {
 	 * 
 	 */
 	public static void main(String[] args) {
-		int time = 60;
+		//TODO changed
+		int time = 10;
 		int moveCache = -1;
 		int repeated = 0;
 		int errors = 0;

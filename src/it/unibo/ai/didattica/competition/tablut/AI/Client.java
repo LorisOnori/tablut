@@ -10,24 +10,24 @@ import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 public class Client extends TablutClient{
 	
 	private static final String NAME = "BHO";
-	private final int timeOut;
+	private static int timeOut = 8;
 	private final int currentDepthLimit;
 
 	public Client(String player, int timeout, String ipAddress) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);
-		this.timeOut = timeout;
+		Client.timeOut = timeout -3;
 		currentDepthLimit = 4;
 	}
 
 	public Client(String player, int timeout, String ipAddress, int depth) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);
-		this.timeOut = timeout;
+		Client.timeOut = timeout - 3;  //Changed
 		this.currentDepthLimit = depth;
 	}
 
 	public Client(String player) throws IOException {
 		super(player, NAME);
-		this.timeOut = 58;
+		Client.timeOut = 7;
 		currentDepthLimit = 4;
 	}
 
@@ -131,6 +131,10 @@ public class Client extends TablutClient{
 			}
 		}
 	
+	}
+
+	public static int getTimeOut() {
+		return timeOut;
 	}
 }
 	
