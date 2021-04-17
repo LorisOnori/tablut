@@ -35,7 +35,7 @@ public class Minmax {
 	private static final int NUMERO_TORRI_BIANCHE = 8;
 	private static final int NUMERO_TORRI_NERE = 16;
 	//Posso svuotarla quando un pezzo viene mangiato
-	private static Map<Board, int[]> traspositionTable;
+	private static Map<Board, Integer> traspositionTable;
 	private static Map<Board, Integer> posizioniPassate;
 	private static int torriBianche = Minmax.NUMERO_TORRI_BIANCHE;
 	private static int torriNere = Minmax.NUMERO_TORRI_NERE;
@@ -56,6 +56,8 @@ public class Minmax {
 	
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     private static boolean devoRitornare = false;
+    
+    public int minmaxCount = 0;
 
 	
 	
@@ -71,6 +73,10 @@ public class Minmax {
 	private Minmax() {
 		traspositionTable = new HashMap<>();
 		posizioniPassate = new HashMap<>();
+	}
+	
+	public static Map<Board, Integer> getTraspositionTable() {
+		return traspositionTable;
 	}
 	
 	public static void resetTranspositionTable() {
@@ -124,20 +130,24 @@ public class Minmax {
 	}
 
 	
-	public int minmax(Board brd, int depth,int  alpha, int beta, Player player, int mainDepth) {
-		
-		if(traspositionTable.containsKey(brd) && traspositionTable.get(brd)[DEPTH_INDEX] >= depth)
-			return traspositionTable.get(brd)[EVAL];
-		else if (depth == 0) {
-			int ev =  (int) eval(brd);
-			traspositionTable.put(brd, new int[] {ev, mainDepth});
-			return ev;
+	public int minmax(Board brd, int depth,int  alpha, int beta, Player player) {
+		this.minmaxCount ++;
+		if(depth == 0) {
+			if(traspositionTable.containsKey(brd))
+				return traspositionTable.get(brd);
+			else {
+				int ev = (int) eval(brd);
+				traspositionTable.put(brd, ev);
+				return ev;
+			}
+				
 		}
+		
 		int value;
 		//MAX
 		if(player == Player.WHITE) {
 			
-			int bestVal = MIN; //Giocatore ha perso se non ci sono mosse (Non si entra nel ciclo sotto)
+			value = MIN; //Giocatore ha perso se non ci sono mosse (Non si entra nel ciclo sotto)
 			
 			//Ordinamento Figli senza instanziare ancora
 			
@@ -148,32 +158,32 @@ public class Minmax {
 				return MIN;
 			Collections.sort(mosse);
 			Collections.reverse(mosse);
+			
 			for(Mossa m: mosse) {
 				//Board b = m.calcolaCatture();
-				value = minmax(m.getBoardAggiornata(), depth-1, alpha, beta, Player.BLACK, mainDepth);
-				bestVal = Math.max(bestVal, value);
-				alpha  = Math.max(alpha, bestVal);
-				if(beta <= alpha)
+				value = Math.max(value, minmax(m.getBoardAggiornata(), depth-1, alpha, beta, Player.BLACK));
+				alpha  = Math.max(alpha, value);
+				if(alpha >= beta)
 					break;
 			}
-			return bestVal;
+			return value;
 		}else {
 			//BLACK MIN
-			int bestVal = MAX;
+			value = MAX;
 			List<Mossa> mosse= brd.getNextMovesByPlayer(Player.BLACK);
 			//Se mosse == null --> Non si può fare nessuna mossa quindi NERO perde
 			if(mosse == null)
 				return MAX;
 			Collections.sort(mosse);
+			
 			for(Mossa m: mosse) {
 				//Board b = m.calcolaCatture();
-				value = minmax(m.getBoardAggiornata(), depth-1, alpha, beta, Player.WHITE, mainDepth);
-				bestVal = Math.min(bestVal, value);
-				beta  = Math.min(beta, bestVal);
+				value = Math.min(value, minmax(m.getBoardAggiornata(), depth-1, alpha, beta, Player.WHITE));
+				beta  = Math.min(beta, value);
 				if(beta <= alpha)
 					break;
 			}
-			return bestVal;
+			return value;
 			
 		}
 	}
@@ -251,6 +261,8 @@ public class Minmax {
 			dirBlack += brd.numeroDirezioniRook(r);
 		}
 		
+//		return (brd.getWhiteRooksCount() * DIFF - brd.getBlackRooksCount()) * W_DIFFERENZA_PEZZI;
+		
 		return W_DIFFERENZA_PEZZI * brd.rookDifferenceCount() 
 				+ W_DIREZIONI_RE * brd.numeroDirezioniRe() 
 				+ W_POSIZIONI_OCC_RE * brd.numeroCaselleDiponibiliKing() 
@@ -323,11 +335,11 @@ public class Minmax {
 				for(Mossa m : mosse){
 					//System.out.println("b");
 					if(Minmax.devoRitornare) {
-						System.out.println("Ritorno prof "+ i);
+						System.out.println("Ritorno prof "+ i + " minmax count "+minmaxCount);
 						return res;
 					}
 					
-					val = minmax(m.getBoardAggiornata(), i, MIN, MAX, player, i);
+					val = minmax(m.getBoardAggiornata(), i, MIN, MAX, player);
 					
 					if(player == Player.WHITE) {
 						if(val > best ) {
@@ -345,20 +357,6 @@ public class Minmax {
 				}
 			}
 
-			//Devo prendedere il massimo o il minimo diependentemente dal giocatore
-			
-//			int min = MAX;
-//			int ind = 0;
-//			for(int i = 0 ; i<valori.length; i++) {
-//				//prendo il minimo
-//				if(valori[i] < min) {
-//					ind = i;
-//				}
-//			}
-			
-			//Sbagliato --> Devo ritornare la board prima di aver eliminato i pezzi (Quella contenuta in mossa)
-			//Ordinando le board mi perdo la mossa originale
-			//Posso ordinarle dentro mossa
 
 		}
 		

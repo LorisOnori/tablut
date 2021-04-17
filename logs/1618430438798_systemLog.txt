@@ -1,0 +1,34 @@
+Apr 14, 2021 10:00:38 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Accensione server
+Apr 14, 2021 10:00:39 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Partita di Tablut
+Apr 14, 2021 10:00:39 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Waiting for white connection..
+Apr 14, 2021 10:01:22 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: White player connected
+Apr 14, 2021 10:01:22 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura nome player bianco in corso..
+Apr 14, 2021 10:01:23 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: White player name:	BHO
+Apr 14, 2021 10:01:23 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Waiting for Black connection..
+Apr 14, 2021 10:01:26 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Accettata connessione con client giocatore Nero
+Apr 14, 2021 10:01:26 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura nome player nero in corso..
+Apr 14, 2021 10:01:26 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Black player name:	BHO
+Apr 14, 2021 10:01:26 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Invio messaggio ai giocatori
+Apr 14, 2021 10:01:26 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura mossa player W in corso..
+Apr 14, 2021 10:01:35 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Move received.	Turn: W Pawn from e7 to a7
+Apr 14, 2021 10:01:35 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Invio messaggio ai client
+Apr 14, 2021 10:01:35 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura mossa player B in corso..
+Apr 14, 2021 10:01:45 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+WARNING: Timeout! Player B lose!
+Apr 14, 2021 10:01:45 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+WARNING: Chiusura sistema per timeout
