@@ -262,6 +262,31 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return val+1; //Il re altrimenti � contato come nero
  	}*/
 	
+	public boolean whiteWin() {
+		
+		int []caselle = this.numberOfOccupiableCells(this.kindPosition);
+		int kc, kr;
+		kc = Board.indexToCoordinate(this.kindPosition)[0];
+		kr = Board.indexToCoordinate(this.kindPosition)[1];
+		
+		int []nord = {kr + caselle[NORD], kc};
+		int []sud ={kr - caselle[SUD], kc};
+		int []est = {kr, caselle[EST] + kc};
+		int []ovest = {kr,kc - caselle[OVEST]};
+		
+		
+
+		for(int []cell : Board.finalCells) {
+			if((cell[0] == nord[0] && cell[1] == nord[1]) || 
+					(cell[0] == sud[0] && cell[1] == sud[1]) || 
+					(cell[0] == est[0] && cell[1] == est[1]) || 
+					(cell[0] == ovest[0] && cell[1] == ovest[1]))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	public int rookDifferenceCount() {
 		return this.whitePieces-this.blackPieces;
 	}
@@ -405,7 +430,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 				else
 					nord++;
 			}
-			ret[Board.NORD] = nord;
+			ret[NORD] = nord;
 			//SUD
 			int sud = 0;
 			for(int i = r-1 ; i > 0; i--) {
@@ -417,7 +442,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 				else
 					sud++;
 			}
-			ret[Board.SUD] = sud;
+			ret[SUD] = sud;
 			
 			//EST 
 			int est = 0;

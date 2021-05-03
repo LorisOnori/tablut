@@ -9,7 +9,7 @@ import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class Client extends TablutClient{
 	
-	private static final String NAME = "BHO";
+	private static final String NAME = "Trent";
 	private static int timeOut = 8;
 	private final int currentDepthLimit;
 

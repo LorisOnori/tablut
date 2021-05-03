@@ -44,15 +44,15 @@ public class Minmax {
 
 	private static final double DIFF  = 16/8;
 	
-	private static final double W_DIFFERENZA_PEZZI = 100;
-	private static final double W_DIREZIONI_RE = 3;
-	private static final double W_POSIZIONI_OCC_RE = 8;
+	private static final double W_DIFFERENZA_PEZZI = 300;
+	private static final double W_DIREZIONI_RE = 20;
+	private static final double W_POSIZIONI_OCC_RE = 3;
 	private static final double W_DISTANZA_GOAL = 10;
-	private static final double W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 20 * DIFF;
-	private static final double W_POSIZIONI_OCCUPABILI_TORRI_NERO = 20 ;
+	private static final double W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 4 * DIFF;
+	private static final double W_POSIZIONI_OCCUPABILI_TORRI_NERO = 4 ;
 	private static final double W_DIREZIONI_TORRI_BIANCO = 2 * DIFF;
 	private static final double W_DIREZIONI_TORRI_NERO = 2;
-	private static final double W_BLACK_AROUND_KING = 15;
+	private static final double W_BLACK_AROUND_KING = 50;
 	
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     private static boolean devoRitornare = false;
@@ -97,6 +97,8 @@ public class Minmax {
 	public Mossa iterative(Board board, Player player){
 		
 		//Genero figlio
+		this.minmaxCount = 0;
+		Minmax.devoRitornare = false;
 		Callable<Mossa> callable = new Child(board, player);
 		Future<Mossa> res = executorService.submit(callable);
 		
@@ -136,7 +138,7 @@ public class Minmax {
 			if(traspositionTable.containsKey(brd))
 				return traspositionTable.get(brd);
 			else {
-				int ev = (int) eval(brd);
+				int ev = (int) eval(brd, player);
 				traspositionTable.put(brd, ev);
 				return ev;
 			}
@@ -194,7 +196,7 @@ public class Minmax {
 	//Nella genereazione di mosse (non qui) posso valutare tutte le mosse e ordinarle in base alla differenza pezzi che dovrebbe essere l'indice pi� importate
 	//Minmax quindi esplora prima queste mosse e poi le altre.
 	//Valuta la posizione corrente
-	public double eval(Board brd) {
+	public double eval(Board brd, Player player) {
 		//TODO 
 		
 		//WHITE WIN
@@ -261,17 +263,20 @@ public class Minmax {
 			dirBlack += brd.numeroDirezioniRook(r);
 		}
 		
+		int whiteWin = brd.whiteWin() &&  player == Player.BLACK? Integer.MAX_VALUE : 0;
+		
 //		return (brd.getWhiteRooksCount() * DIFF - brd.getBlackRooksCount()) * W_DIFFERENZA_PEZZI;
 		
 		return W_DIFFERENZA_PEZZI * brd.rookDifferenceCount() 
 				+ W_DIREZIONI_RE * brd.numeroDirezioniRe() 
 				+ W_POSIZIONI_OCC_RE * brd.numeroCaselleDiponibiliKing() 
-				+ W_DISTANZA_GOAL * brd.manhattamDistanceToClosestGoal() 
+				//+ W_DISTANZA_GOAL * brd.manhattamDistanceToClosestGoal() 
 				+ W_POSIZIONI_OCCUPABILI_TORRI_BIANCO * brd.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
 				- W_POSIZIONI_OCCUPABILI_TORRI_NERO * brd.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)
-				+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
-				- W_DIREZIONI_TORRI_NERO * dirBlack 
-				- W_BLACK_AROUND_KING * brd.blackAroundKing();
+				//+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
+				//- W_DIREZIONI_TORRI_NERO * dirBlack 
+				- W_BLACK_AROUND_KING * brd.blackAroundKing()
+				+ whiteWin;
 	}
 	
 	
@@ -335,7 +340,7 @@ public class Minmax {
 				for(Mossa m : mosse){
 					//System.out.println("b");
 					if(Minmax.devoRitornare) {
-						System.out.println("Ritorno prof "+ i + " minmax count "+minmaxCount);
+						System.out.println("Ritorno profondita "+ i + " minmax count "+minmaxCount);
 						return res;
 					}
 					
