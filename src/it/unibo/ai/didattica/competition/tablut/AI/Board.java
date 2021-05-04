@@ -262,7 +262,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return val+1; //Il re altrimenti � contato come nero
  	}*/
 	
-	public boolean whiteWin() {
+	public boolean canWhiteWin() {
 		
 		int []caselle = this.numberOfOccupiableCells(this.kindPosition);
 		int kc, kr;
@@ -646,6 +646,37 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			ret.add(p);
 		return ret;
 	}
+	
+	public boolean whiteWin() {
+	//WHITE WIN
+		for(int []p : Board.finalCellsSet) {
+			if(this.kindPosition == Board.coordinateToIndex(p[0], p[1]))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean blackWin() {
+			//BLACK WIN
+			
+			//ultimo controllo se:
+			//f k b
+			//b k f
+			//e dall'alto in basso
+			int []k = Board.indexToCoordinate(this.kindPosition);
+			if(this.blackAroundKing() == 4)
+				return true;
+			else if(this.blackAroundKing() == 3 && (this.kindPosition == Board.NORD_CENTER_POS || this.kindPosition == Board.EST_CENTER_POS || this.kindPosition == Board.SUD_CENTER_POS || this.kindPosition == Board.OVEST_CENTER_POS))
+				return true;
+			else if(k[0] > 1 && this.getCell(k[0]+1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]-1, k[1])  
+					||  k[0] < 9 && this.getCell(k[0]-1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]+1, k[1]) 
+					||  k[1] > 1 && this.getCell(k[0], k[1]+1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]-1)  
+					||  k[1] < 9 && this.getCell(k[0], k[1]-1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]+1) ){
+				return true;
+			}else
+				return false;
+			
+	}
 
 
 	@Override
@@ -658,6 +689,21 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	public int compare(Board o1, Board o2) {
 		return Integer.compare(o1.rookDifferenceCount(), o2.rookDifferenceCount());
 
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		for(Piece p : this.board.values()) {
+			if(p.getType() == Type.BLACK_ROOK) {
+				s += "Black Rook R: "+ p.getRow()+ " C: "+p.getColumn() + " ";
+			}else if(p.getType() == Type.WHITE_ROOK) {
+				s += "White Rook R: "+ p.getRow()+ " C: "+p.getColumn() + " ";
+			}else if(p.getType() == Type.KING) {
+			 s += "King R: "+ p.getRow()+ " C: "+p.getColumn() + " ";
+			}
+		}
+		return s;
 	}
 	
 	

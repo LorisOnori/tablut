@@ -25,6 +25,18 @@ public class Minmax {
 	
 	//Transposition Table
 	
+	/*
+	 * 
+	 * Minmax -> Passo Board non aggiornata
+	 * 		Iterative: Controllo se c'è un vincitore in quel caso return
+	 * 					Calcolo mossa
+	 * 					Valuto
+	 * 
+	 */
+	
+	//Adesso la mossa viene valutata prima
+	
+	
 	private Board board;
 	private static final int MAX = Integer.MAX_VALUE;
 	private static final int MIN = Integer.MIN_VALUE;
@@ -139,6 +151,7 @@ public class Minmax {
 				return traspositionTable.get(brd);
 			else {
 				int ev = (int) eval(brd, player);
+				
 				traspositionTable.put(brd, ev);
 				return ev;
 			}
@@ -158,11 +171,17 @@ public class Minmax {
 			//nessuna mossa possibile --> NERO vince
 			if(mosse == null)
 				return MIN;
+			
 			Collections.sort(mosse);
 			Collections.reverse(mosse);
 			
 			for(Mossa m: mosse) {
-				//Board b = m.calcolaCatture();
+				
+				if(m.getBoardAggiornata().whiteWin())
+					return MAX;
+				else if(m.getBoardAggiornata().blackWin())
+					return MIN;
+				
 				value = Math.max(value, minmax(m.getBoardAggiornata(), depth-1, alpha, beta, Player.BLACK));
 				alpha  = Math.max(alpha, value);
 				if(alpha >= beta)
@@ -179,7 +198,12 @@ public class Minmax {
 			Collections.sort(mosse);
 			
 			for(Mossa m: mosse) {
-				//Board b = m.calcolaCatture();
+				
+				if(m.getBoardAggiornata().whiteWin())
+					return MAX;
+				else if(m.getBoardAggiornata().blackWin())
+					return MIN;
+				
 				value = Math.min(value, minmax(m.getBoardAggiornata(), depth-1, alpha, beta, Player.WHITE));
 				beta  = Math.min(beta, value);
 				if(beta <= alpha)
@@ -211,8 +235,10 @@ public class Minmax {
 		//b k f
 		//e dall'alto in basso
 		int []k = Board.indexToCoordinate(brd.kindPosition);
-		if(brd.blackAroundKing() == 4)
+		if(brd.blackAroundKing() == 4) {
+			//System.out.println("QUATTROOOOOOO");
 			return MIN;
+		}
 		else if(brd.blackAroundKing() == 3 && (brd.kindPosition == Board.NORD_CENTER_POS || brd.kindPosition == Board.EST_CENTER_POS || brd.kindPosition == Board.SUD_CENTER_POS || brd.kindPosition == Board.OVEST_CENTER_POS))
 			return MIN;
 		else if(k[0] > 1 && brd.getCell(k[0]+1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]-1, k[1])  
@@ -223,11 +249,8 @@ public class Minmax {
 		}
 			
 			//DRAW
-		if(posizioniPassate.containsKey(brd))
-			return 0;
-		
-		
-		
+		//if(posizioniPassate.containsKey(brd))
+		//	return 0;
 		
 		
 		/*
@@ -263,7 +286,7 @@ public class Minmax {
 			dirBlack += brd.numeroDirezioniRook(r);
 		}
 		
-		int whiteWin = brd.whiteWin() &&  player == Player.BLACK? Integer.MAX_VALUE : 0;
+		//int whiteWin = brd.canWhiteWin() &&  player == Player.BLACK? Integer.MAX_VALUE : 0;
 		
 //		return (brd.getWhiteRooksCount() * DIFF - brd.getBlackRooksCount()) * W_DIFFERENZA_PEZZI;
 		
@@ -275,8 +298,8 @@ public class Minmax {
 				- W_POSIZIONI_OCCUPABILI_TORRI_NERO * brd.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)
 				//+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
 				//- W_DIREZIONI_TORRI_NERO * dirBlack 
-				- W_BLACK_AROUND_KING * brd.blackAroundKing()
-				+ whiteWin;
+				- W_BLACK_AROUND_KING * brd.blackAroundKing();
+				//+ whiteWin;
 	}
 	
 	
@@ -325,17 +348,53 @@ public class Minmax {
 			
 			//Sort --> Controllo se salvando la eval completa sulla mappa con livallo 0 guadagno
 			//System.out.println();
-			Collections.sort(mosse);
-			if(Player.WHITE == player)
-				Collections.reverse(mosse);
+//			Collections.sort(mosse);
+//			if(Player.WHITE == player)
+//				Collections.reverse(mosse);
+			
+			
+			//RANDOM
+			Collections.shuffle(mosse);
 			
 			int val; 
 			int best = Player.WHITE == player ? MIN : MAX; 
 			Mossa res = mosse.get(0);
 			
 			//Da parallelizzare e ottimizzare con l'ordinamento delle mosse e un db per i risultati parziali e finali
-			for(int i= 1; ; i++) { // -----> Cambiare la profonditï¿½ con il tempo
+			long inizio = System.currentTimeMillis();
+			
+//			for(int i = 0; i<TEST_DEPTH; i++) {
+//				val = minmax(board, i, MIN, MAX, player);
+//				
+//				if(player == Player.WHITE) {
+//					if(val > best ) {
+//						best = val;
+//						res = m;
+//					}
+//				}else { //BLACK
+//					if(val < best) {
+//						best = val;
+//						res = m;
+//					}
+//				}
+//			}
+			
+			for(int i= 1; i < TEST_DEPTH ; i++) { // -----> Cambiare la profonditï¿½ con il tempo
 				System.out.println("Iterative depth "+i);
+				
+				//QUESTO SOTTO E PARZIALMENTE SBAGLIATO
+				
+				//Qua genero le prime mosse e dopo chiamo minmax che me le rigenera sempre le stesse mosse
+				
+				//Una soluzione potrebbe essere quella di chiamare direttamente minmax e vedere il pezzo che è stato mosso
+				//Controllando le due board vedo il pezzo che non è in comune e rappresenta la partenza e l'arrivo.
+				//Però adesso minmax ritorna solamente il valore di una mossa ma non so quale
+				//Dovrei modificare minmax per far ritornare anche il pezzo relativo a tale mossa
+				//Oppure far partire minmax dal giocatore opposto e il ciclo for dell'iterative deepening da 1 invece che da 0
+				//Con 8 pezzi e TEST_DEPTH = 3 ci mette 1 secondo nella versione con due calcoli di mosse 
+				
+				
+				
 				
 				for(Mossa m : mosse){
 					//System.out.println("b");
@@ -344,8 +403,15 @@ public class Minmax {
 						return res;
 					}
 					
-					val = minmax(m.getBoardAggiornata(), i, MIN, MAX, player);
-					
+					if(m.getBoardAggiornata().whiteWin())
+						val = MAX;
+					else if(m.getBoardAggiornata().blackWin()) {
+						System.out.println(m.getPiece().getRow() + " "+m.getPiece().getColumn());
+						val = MIN;
+					}else {
+						Player p = player == Player.WHITE ? Player.BLACK : Player.WHITE;
+						val = minmax(m.getBoardAggiornata(), i, MIN, MAX, p);
+					}
 					if(player == Player.WHITE) {
 						if(val > best ) {
 							best = val;
@@ -361,7 +427,8 @@ public class Minmax {
 					
 				}
 			}
-
+			System.out.println("DURATA : " + (System.currentTimeMillis()-inizio));
+			return res;
 
 		}
 		
