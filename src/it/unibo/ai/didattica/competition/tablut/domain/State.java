@@ -2,6 +2,10 @@ package it.unibo.ai.didattica.competition.tablut.domain;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+import it.unibo.ai.didattica.competition.tablut.AIFM.Coord;
 
 /**
  * Abstract class for a State of a game We have a representation of the board
@@ -60,7 +64,7 @@ public abstract class State {
 
 	}
 
-	protected Pawn board[][];
+ Pawn board[][];
 	protected Turn turn;
 
 	public State() {
@@ -235,6 +239,35 @@ public abstract class State {
 			}
 		}
 		return count;
+	}
+	
+	/***** Aggiunta per FM ****///
+	public final int KING = 2;
+	public final int WHITE = 1;
+	public final int BLACK = 0;
+
+	public List<List<Coord>> getPieces(){
+		List<List<Coord>> res = new ArrayList<>();
+
+		res.add(BLACK, new ArrayList<Coord>());
+		res.add(WHITE, new ArrayList<Coord>());
+		res.add(KING, new ArrayList<Coord>(1));
+
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[i].length; j++) {
+
+				if (board[i][j] == Pawn.BLACK)
+					res.get(BLACK).add(new Coord(i, j));
+
+				else if (board[i][j] == Pawn.WHITE)
+					res.get(WHITE).add(new Coord(i, j));
+
+				else if (board[i][j] == Pawn.KING)
+					{res.get(KING).add(new Coord(i, j)); res.get(WHITE).add(new Coord(i, j));}
+			}
+		}
+
+		return res;
 	}
 
 }

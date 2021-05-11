@@ -29,6 +29,15 @@
             </classpath>
         </java>
     </target>
+	<target name="serverGenetic">
+	        <java classname="it.unibo.ai.didattica.competition.tablut.server.ServerGenetic" fork="true">
+	            <classpath>
+	                <pathelement location="lib/gson-2.2.2.jar"/>
+	                <pathelement location="lib/commons-cli-1.4.jar"/>
+	                <pathelement location="build"/>
+	            </classpath>
+	        </java>
+	    </target>
 	 <target name="clientwhite">
 	        <java classname="it.unibo.ai.didattica.competition.tablut.AI.ClientWhite" fork="true">
 	            <classpath>
@@ -38,6 +47,24 @@
 	            </classpath>
 	        </java>
 	    </target>
+	<target name="frittowhite">
+		        <java classname="it.unibo.ai.didattica.competition.tablut.AIFM.TablutFrittoMistoWhiteClient" fork="true">
+		            <classpath>
+		                <pathelement location="lib/gson-2.2.2.jar"/>
+		                <pathelement location="lib/commons-cli-1.4.jar"/>
+		                <pathelement location="build"/>
+		            </classpath>
+		        </java>
+		    </target>
+	<target name="frittoblack">
+		        <java classname="it.unibo.ai.didattica.competition.tablut.AIFM.TablutFrittoMistoBlackClient" fork="true">
+		            <classpath>
+		                <pathelement location="lib/gson-2.2.2.jar"/>
+		                <pathelement location="lib/commons-cli-1.4.jar"/>
+		                <pathelement location="build"/>
+		            </classpath>
+		        </java>
+		    </target>
 	<target name="clientblack">
 		        <java classname="it.unibo.ai.didattica.competition.tablut.AI.ClientBlack" fork="true">
 		            <classpath>
