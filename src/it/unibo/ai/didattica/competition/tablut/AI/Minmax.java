@@ -361,7 +361,7 @@ public class Minmax {
 			Mossa res = mosse.get(0);
 			
 			//Da parallelizzare e ottimizzare con l'ordinamento delle mosse e un db per i risultati parziali e finali
-			long inizio = System.currentTimeMillis();
+			//long inizio = System.currentTimeMillis();
 			
 //			for(int i = 0; i<TEST_DEPTH; i++) {
 //				val = minmax(board, i, MIN, MAX, player);
@@ -379,8 +379,8 @@ public class Minmax {
 //				}
 //			}
 			
-			for(int i= 1; i < TEST_DEPTH ; i++) { // -----> Cambiare la profondit� con il tempo
-				System.out.println("Iterative depth "+i);
+			for(int i= 1; ; i++) { // -----> Cambiare la profondit� con il tempo
+				//System.out.println("Iterative depth "+i);
 				
 				//QUESTO SOTTO E PARZIALMENTE SBAGLIATO
 				
@@ -427,8 +427,8 @@ public class Minmax {
 					
 				}
 			}
-			System.out.println("DURATA : " + (System.currentTimeMillis()-inizio));
-			return res;
+			//System.out.println("DURATA : " + (System.currentTimeMillis()-inizio));
+			//return res;
 
 		}
 		

@@ -43,7 +43,7 @@ public class TablutFrittoMistoClient extends TablutClient {
 
 	public TablutFrittoMistoClient(String player) throws IOException {
 		super(player, NAME);
-		this.timeOut = 58;
+		this.timeOut = 10;
 		currDepthLimit = 4;
 	}
 
