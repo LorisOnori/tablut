@@ -48,7 +48,7 @@
 	        </java>
 	    </target>
 	<target name="frittowhite">
-		        <java classname="it.unibo.ai.didattica.competition.tablut.AIFM.TablutFrittoMistoWhiteClient" fork="true">
+		        <java classname="it.unibo.ai.didattica.competition.tablut.AIFM.Clients.TablutFrittoMistoWhiteClient" fork="true">
 		            <classpath>
 		                <pathelement location="lib/gson-2.2.2.jar"/>
 		                <pathelement location="lib/commons-cli-1.4.jar"/>
@@ -57,7 +57,7 @@
 		        </java>
 		    </target>
 	<target name="frittoblack">
-		        <java classname="it.unibo.ai.didattica.competition.tablut.AIFM.TablutFrittoMistoBlackClient" fork="true">
+		        <java classname="it.unibo.ai.didattica.competition.tablut.AIFM.Clients.TablutFrittoMistoBlackClient" fork="true">
 		            <classpath>
 		                <pathelement location="lib/gson-2.2.2.jar"/>
 		                <pathelement location="lib/commons-cli-1.4.jar"/>
