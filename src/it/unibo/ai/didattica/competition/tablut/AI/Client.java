@@ -12,6 +12,15 @@ public class Client extends TablutClient{
 	private static final String NAME = "Trent";
 	private static int timeOut = 10;
 	private final int currentDepthLimit;
+	private static int [] weight = null;
+
+
+	public Client(String player, int [] weight) throws UnknownHostException, IOException {
+		super(player, NAME);
+		Client.weight = weight;
+		currentDepthLimit = 4;
+	}
+
 
 	public Client(String player, int timeout, String ipAddress) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);

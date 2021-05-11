@@ -95,7 +95,7 @@ public class ServerGenetic implements Runnable {
 	 * Integer that represents the game type
 	 */
 	private int gameC;
-	private final static String resultPath = "/home/tablut/genetic/result.txt";
+	public final static String resultPath = "/home/tablut/genetic/partialresult.txt";
 	private File resFile = new File(resultPath);
 	
 	
@@ -676,10 +676,10 @@ public class ServerGenetic implements Runnable {
 				this.game.endGame(state);
 				System.out.println("END OF THE GAME");
 				System.out.println("RESULT: DRAW");
-				int npw = state.getNumberOf(Pawn.WHITE);
-				int npb = state.getNumberOf(Pawn.BLACK);
+				int npw = state.getNumberOf(Pawn.WHITE) - 2*state.getNumberOf(Pawn.BLACK);
+				
 				//Stampa il numero di pedine nere e bianche per vedere chi era in vantaggio
-				pw.write("DRAW "+npw + " "+npb);
+				pw.write("DRAW "+npw );
 				pw.close();
 				endgame = true;
 				break;

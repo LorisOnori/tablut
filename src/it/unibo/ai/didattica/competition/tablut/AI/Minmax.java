@@ -54,17 +54,7 @@ public class Minmax {
 	
 	// HEURISTIC
 
-	private static final double DIFF  = 16/8;
 	
-	private static final double W_DIFFERENZA_PEZZI = 300;
-	private static final double W_DIREZIONI_RE = 20;
-	private static final double W_POSIZIONI_OCC_RE = 3;
-	private static final double W_DISTANZA_GOAL = 10;
-	private static final double W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 4 * DIFF;
-	private static final double W_POSIZIONI_OCCUPABILI_TORRI_NERO = 4 ;
-	private static final double W_DIREZIONI_TORRI_BIANCO = 2 * DIFF;
-	private static final double W_DIREZIONI_TORRI_NERO = 2;
-	private static final double W_BLACK_AROUND_KING = 50;
 	
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     private static boolean devoRitornare = false;
@@ -150,7 +140,7 @@ public class Minmax {
 			if(traspositionTable.containsKey(brd))
 				return traspositionTable.get(brd);
 			else {
-				int ev = (int) eval(brd, player);
+				int ev = (int) Heuristic.eval(brd, player);
 				
 				traspositionTable.put(brd, ev);
 				return ev;
@@ -220,87 +210,7 @@ public class Minmax {
 	//Nella genereazione di mosse (non qui) posso valutare tutte le mosse e ordinarle in base alla differenza pezzi che dovrebbe essere l'indice pi� importate
 	//Minmax quindi esplora prima queste mosse e poi le altre.
 	//Valuta la posizione corrente
-	public double eval(Board brd, Player player) {
-		//TODO 
-		
-		//WHITE WIN
-		for(int []p : Board.finalCellsSet) {
-			if(brd.kindPosition == Board.coordinateToIndex(p[0], p[1]))
-				return MAX;
-		}
-		//BLACK WIN
-		
-		//ultimo controllo se:
-		//f k b
-		//b k f
-		//e dall'alto in basso
-		int []k = Board.indexToCoordinate(brd.kindPosition);
-		if(brd.blackAroundKing() == 4) {
-			//System.out.println("QUATTROOOOOOO");
-			return MIN;
-		}
-		else if(brd.blackAroundKing() == 3 && (brd.kindPosition == Board.NORD_CENTER_POS || brd.kindPosition == Board.EST_CENTER_POS || brd.kindPosition == Board.SUD_CENTER_POS || brd.kindPosition == Board.OVEST_CENTER_POS))
-			return MIN;
-		else if(k[0] > 1 && brd.getCell(k[0]+1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]-1, k[1])  
-				||  k[0] < 9 && brd.getCell(k[0]-1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]+1, k[1]) 
-				||  k[1] > 1 && brd.getCell(k[0], k[1]+1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]-1)  
-				||  k[1] < 9 && brd.getCell(k[0], k[1]-1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]+1) ){
-			return MIN;
-		}
-			
-			//DRAW
-		//if(posizioniPassate.containsKey(brd))
-		//	return 0;
-		
-		
-		/*
-		 * 
-		 * Una volta scelta una mossa controllo le catture possibili
-		 * Quindi valuto questa seconda tabella con le catture o vincita di bianco o nero
-		 * Quindi mando lo stato
-		 * Quindi ricevo lo stato aggiornato senza la pedina catturata
-		 */
-		
-		
-		
-		
-		/*
-		 * Numero di pezzi
-		 * Direzioni del re
-		 * Posizioni occupabili dal re
-		 * Distanza del re dal goal
-		 * Posizioni occupabili dalle torri
-		 * Direzioni in cui le torri si possono muovere
-		 */
-		
-		
-		int []rooks = brd.getRooksByPlayer(Player.WHITE);
-		int dirWhite = 0;
-		int dirBlack = 0;
-		for(int r : rooks) {
-			dirWhite += brd.numeroDirezioniRook(r);
-		}
-		
-		rooks = brd.getRooksByPlayer(Player.BLACK);
-		for(int r : rooks) {
-			dirBlack += brd.numeroDirezioniRook(r);
-		}
-		
-		//int whiteWin = brd.canWhiteWin() &&  player == Player.BLACK? Integer.MAX_VALUE : 0;
-		
-//		return (brd.getWhiteRooksCount() * DIFF - brd.getBlackRooksCount()) * W_DIFFERENZA_PEZZI;
-		
-		return W_DIFFERENZA_PEZZI * brd.rookDifferenceCount() 
-				+ W_DIREZIONI_RE * brd.numeroDirezioniRe() 
-				+ W_POSIZIONI_OCC_RE * brd.numeroCaselleDiponibiliKing() 
-				//+ W_DISTANZA_GOAL * brd.manhattamDistanceToClosestGoal() 
-				+ W_POSIZIONI_OCCUPABILI_TORRI_BIANCO * brd.numeroCaselleDisponibiliRookByPlayer(Player.WHITE)
-				- W_POSIZIONI_OCCUPABILI_TORRI_NERO * brd.numeroCaselleDisponibiliRookByPlayer(Player.BLACK)
-				//+ W_DIREZIONI_TORRI_BIANCO * dirWhite 
-				//- W_DIREZIONI_TORRI_NERO * dirBlack 
-				- W_BLACK_AROUND_KING * brd.blackAroundKing();
-				//+ whiteWin;
-	}
+
 	
 	
 	public class Child implements Callable<Mossa>{
