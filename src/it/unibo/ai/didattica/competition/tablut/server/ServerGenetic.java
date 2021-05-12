@@ -95,8 +95,8 @@ public class ServerGenetic implements Runnable {
 	 * Integer that represents the game type
 	 */
 	private int gameC;
-	public final static String resultPath = "/home/tablut/genetic/partialresult.txt";
-	private File resFile = new File(resultPath);
+	public final static String resultPath = "partialresult.txt";
+	private static File resFile = new File(resultPath);
 	
 	
 	public ServerGenetic(int timeout, int cacheSize, int numErrors, int repeated, int game, boolean gui) {
@@ -125,12 +125,18 @@ public class ServerGenetic implements Runnable {
 	 */
 	public static void main(String[] args) {
 		//TODO changed
-		int time = 10;
+		int time = 30;
 		int moveCache = -1;
 		int repeated = 0;
 		int errors = 0;
 		int gameChosen = 4;
 		boolean enableGui = true;
+		try {
+			resFile.createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		CommandLineParser parser = new DefaultParser();
 
@@ -494,6 +500,7 @@ public class ServerGenetic implements Runnable {
 			System.out.println("Socket error....");
 			loggSys.warning("Errore connessioni");
 			loggSys.warning("Chiusura sistema");
+			e.printStackTrace();
 			System.exit(1);
 		}
 
@@ -618,7 +625,8 @@ public class ServerGenetic implements Runnable {
 
 			// GAME TOO LONG, TIMEOUT
 			Date ti = new Date();
-			long hoursoccurred = (ti.getTime() - starttime.getTime()) / 60 / 60 / 1000;
+			//minutes
+			long hoursoccurred = (ti.getTime() - starttime.getTime()) / 60 / 1000;
 			if (hoursoccurred > hourlimit) {
 				System.out.println("TIMEOUT! END OF THE GAME...");
 				loggSys.warning("Chiusura programma per timeout di " + hourlimit + " ore");
@@ -689,8 +697,15 @@ public class ServerGenetic implements Runnable {
 			}
 
 		}
+		try {
+			this.socketBlack.close();
+			this.socketWhite.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		System.exit(0);
+		return;
 	}
 
 }

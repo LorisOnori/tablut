@@ -28,9 +28,9 @@ import it.unibo.ai.didattica.competition.tablut.server.ServerGenetic;
 
 public class Main {
 
-	public final static int population = 10; //Deve essere pari
-	public final static int generation = 5;
-	private final static String pesi = "/home/tablut/genetic/weight.txt";
+	public final static int population = 2; //Deve essere pari
+	public final static int generation = 2;
+	private final static String pesi = "weight.txt";
 	
 	private static final double DIFF  = 16/8;
 	
@@ -63,7 +63,13 @@ public class Main {
 		
 		List<int[]> pesiVincenti = new ArrayList<>();
 		List<int[]> newPop = new ArrayList<>();
-		
+		File filePesi = new File(pesi);
+		try {
+			filePesi.createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		StringBuilder sb = new StringBuilder();
 
 		
@@ -140,6 +146,7 @@ public class Main {
 					 Future server = executorService.submit( () -> {
 					         ServerGenetic.main(new String[0]);
 					 });
+					 TimeUnit.MILLISECONDS.sleep(500);
 					 
 					 if(m == 0) {
 						 executorService.submit( () -> {
@@ -170,7 +177,7 @@ public class Main {
 						           System.out.println("black exception");
 						           e.printStackTrace();
 						       }
-						       }).get(11, TimeUnit.MINUTES);
+						       }).get(14, TimeUnit.MINUTES);
 					}else {
 						 executorService.submit( () -> {
 						       try {
@@ -179,12 +186,13 @@ public class Main {
 						           System.out.println("black exception");
 						           e.printStackTrace();
 						       }
-						       }).get(11, TimeUnit.MINUTES);
+						       }).get(14, TimeUnit.MINUTES);
 					}
 
 				   
 				   //Aspetto 10 minuti che finisce la partita
-				   
+					TimeUnit.SECONDS.sleep(3);
+				   System.out.println("PARTITA FINITA");
 				   
 				   executorService.shutdownNow();
 				   
@@ -267,7 +275,7 @@ public class Main {
 		System.out.println(sb.toString());
 		PrintWriter pr = null;
 		try {
-			pr = new PrintWriter(new File(pesi));
+			pr = new PrintWriter(filePesi);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -296,8 +304,7 @@ public class Main {
 		res[5] = getRandom(weightBase[5], 20);
 		res[6] = getRandom(weightBase[6], 20);
 		res[7] = getRandom(weightBase[7], 20);
-		res[8] = getRandom(weightBase[8], 20);
-		res[9] = getRandom(weightBase[9], 200);
+		res[8] = getRandom(weightBase[8], 200);
 		
 		return res;
 	}

@@ -8,6 +8,8 @@ import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class Client extends TablutClient{
+	//TODO
+	//ALLA FINE HO COMMENTATNO I System.exit e messo i return.
 	
 	private static final String NAME = "Trent";
 	private static int timeOut = 10;
@@ -126,13 +128,16 @@ public class Client extends TablutClient{
 					System.out.println("Waiting for your opponent move... ");
 				} else if (this.getCurrentState().getTurn().equals(Turn.WHITEWIN)) {
 					System.out.println(s);
-					System.exit(0);
+					//System.exit(0);
+					return;
 				} else if (this.getCurrentState().getTurn().equals(Turn.BLACKWIN)) {
 					System.out.println(s2);
-					System.exit(0);
+					return;
+					//System.exit(0);
 				} else if (this.getCurrentState().getTurn().equals(Turn.DRAW)) {
 					System.out.println("DRAW!");
-					System.exit(0);
+					//System.exit(0);
+					return;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
