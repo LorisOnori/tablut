@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -26,7 +28,7 @@ import it.unibo.ai.didattica.competition.tablut.server.ServerGenetic;
 
 public class Main {
 
-	public final static int population = 10;
+	public final static int population = 10; //Deve essere pari
 	public final static int generation = 5;
 	private final static String pesi = "/home/tablut/genetic/weight.txt";
 	
@@ -59,24 +61,11 @@ public class Main {
 	
 	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
 		
-		Client [] cw = new Client[population];
-		Client [] cb = new Client[population];
+		List<int[]> pesiVincenti = new ArrayList<>();
+		List<int[]> newPop = new ArrayList<>();
 		
-		List<int[]> pesiVincentiWhite = new ArrayList<>();
-		List<int[]> pesiVincentiBlack = new ArrayList<>();
-		
-		//Creo la popoplazione
-		for(int i = 0 ; i< population; i++) {
-			try {
-				cw[i] = new Client("WHITE", generaPesi());
-				cb[i] = new Client("BLACK", generaPesi());
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-		}
+		StringBuilder sb = new StringBuilder();
+
 		
 		/*****
 		 * 
@@ -89,78 +78,202 @@ public class Main {
 		
 		for(int g = 0; g < generation; g++) {
 			System.out.println("GENERAZIONE "+g);
-			for(int p = 0; p<population; p++) {
-				
-				int[] w1 = generaPesi();
-				int[] w2 = generaPesi();
-				
-				 ExecutorService executorService = Executors.newCachedThreadPool();
-		
-				 Future server = executorService.submit( () -> {
-				         ServerGenetic.main(new String[0]);
-				 });
-				 
-				 
-			       executorService.submit( () -> {
-			       try {
-			           ClientGenetic.main(true, w1);
-			       } catch (Exception e) {
-			           System.out.println("Opponent exception");
-			           e.printStackTrace();
-			       }
-			   });
-				 
-				 
-			   executorService.submit( () -> {
-		       try {
-		           ClientGenetic.main(false, w2);
-		       } catch (Exception e) {
-		           System.out.println("Opponent exception");
-		           e.printStackTrace();
-		       }
-		       }).get(11, TimeUnit.MINUTES);
-			   
-			   //Aspetto 10 minuti che finisce la partita
-			   
-			   
-			   executorService.shutdownNow();
-			   
-			   //Controllo i risuolati sul file scritto dal server
-			   BufferedReader br = null;
-			   try {
-					br = new BufferedReader(new FileReader(new File(ServerGenetic.resultPath)));
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if(g == 0) {
+				for(int i = 0; i<population; i++) {
+					newPop.add(generaPesi());
 				}
+			}else {
+				//MUTAZIONI VARIE
+				Collections.shuffle(pesiVincenti);
+				
+				
+				for(int i = 0 ; i< pesiVincenti.size() && pesiVincenti.size() > 1; i++) {
+					int [] v1 = pesiVincenti.get(i);
+					int [] v2 = null;
+					int [] v3 = new  int[WEIGHTS];
+					try {
+						v2 = pesiVincenti.get(i+1);
+					}catch(IndexOutOfBoundsException e) {
+						newPop.add(v1);
+						break;
+					}
+					
+					for(int w = 0 ;  w < WEIGHTS; w++) {
+						if(w <= 4)
+							v3[w] = v1[w];
+						else
+							v3[w] = v2[w];
+						
+						Random r = new Random(System.currentTimeMillis());
+						if(r.nextInt(100) +1 <= 3)
+							if(w == 0 || w == 8)
+								v3[w] = getRandom(v3[w],200);
+							else
+								v3[w] = getRandom(v3[w],20);	
+						
+					}
+					newPop.add(v3);
+				}
+				
+				//Fine mutazione
+				for(int i = newPop.size() ; i< population; i ++) {
+					newPop.add(generaPesi());
+				}
+				Collections.shuffle(newPop);
+				pesiVincenti = new ArrayList<>();
+				
+			}
+			
+			for(int p = 0; p<population/2; p++) {
+				
+				//Match andata-ritorno
+				int [] w1 = newPop.get(p);
+				int [] w2 = newPop.get(p+1);
+				
+				boolean vintoAndata = false;
+				for(int m = 0 ; m < 2 ; m++) {
+					
+					
+					
+					 ExecutorService executorService = Executors.newCachedThreadPool();
+			
+					 Future server = executorService.submit( () -> {
+					         ServerGenetic.main(new String[0]);
+					 });
+					 
+					 if(m == 0) {
+						 executorService.submit( () -> {
+						       try {
+						    		   ClientGenetic.main(true, w1);    		   
+						       } catch (Exception e) {
+						           System.out.println("white exception");
+						           e.printStackTrace();
+						       }
+					       });
+					 }else {
+						 executorService.submit( () -> {
+						       try {
+						   		   ClientGenetic.main(true, w2);	   
+						       } catch (Exception e) {
+						           System.out.println("white exception");
+						           e.printStackTrace();
+						       }
+					       });
+					 }
+				      
+					 
+					if( m == 0) {
+						 executorService.submit( () -> {
+						       try {
+						    		ClientGenetic.main(false, w2);
+						       } catch (Exception e) {
+						           System.out.println("black exception");
+						           e.printStackTrace();
+						       }
+						       }).get(11, TimeUnit.MINUTES);
+					}else {
+						 executorService.submit( () -> {
+						       try {
+						    	ClientGenetic.main(false, w1);
+						       } catch (Exception e) {
+						           System.out.println("black exception");
+						           e.printStackTrace();
+						       }
+						       }).get(11, TimeUnit.MINUTES);
+					}
+
 				   
-			   try {
-				String ln = br.readLine();
-				if(ln.equalsIgnoreCase("WHITE")) {
-					pesiVincentiWhite.add(w1);
-				}else if(ln.equalsIgnoreCase("BLACK")) {
-					pesiVincentiBlack.add(w2);
-				}else {
-					StringTokenizer st = new StringTokenizer(ln);
-					st.nextToken();
-					//W - 2*B > 0 vince white altrimenti black
-					int diff = Integer.parseInt(st.nextToken());
-					if(diff > 0)
-						pesiVincentiWhite.add(w1);
-					else
-						pesiVincentiBlack.add(w2);
-				}
+				   //Aspetto 10 minuti che finisce la partita
+				   
+				   
+				   executorService.shutdownNow();
+				   
+				   //Controllo i risuolati sul file scritto dal server
+				   BufferedReader br = null;
+				   try {
+						br = new BufferedReader(new FileReader(new File(ServerGenetic.resultPath)));
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					   
+				   try {
+					String ln = br.readLine();
+					if(ln.equalsIgnoreCase("WHITE")) {
+						if(m == 0)
+							vintoAndata = true;
+						else { //secondo giro (ritorno)
+							if(!vintoAndata) {//prima ha vinto sempre lui con il nero
+								pesiVincenti.add(w2);
+							}
+						}
+							
+					}else if(ln.equalsIgnoreCase("BLACK")) {
+						if(m == 0)
+							vintoAndata = false;
+						else { //secondo giro (ritorno)
+							if(vintoAndata) {//prima ha vinto sempre lui con il bianco
+								pesiVincenti.add(w1);
+							}
+						}
+					}else {
+						StringTokenizer st = new StringTokenizer(ln);
+						st.nextToken();
+						//W - 2*B > 0 vince white altrimenti black
+						int diff = Integer.parseInt(st.nextToken());
+						if(diff > 0) { //Bianco vince
+							if(m == 0)
+								vintoAndata = true;
+							else { //secondo giro (ritorno)
+								if(!vintoAndata) {//prima ha vinto sempre lui con il nero
+									pesiVincenti.add(w2);
+								}
+							}
+						}else {//Nero vince
+							if(m == 0)
+								vintoAndata = false;
+							else { //secondo giro (ritorno)
+								if(vintoAndata) {//prima ha vinto sempre lui con il nero
+									pesiVincenti.add(w1);
+								}
+							}
+						}
+					}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				   try {
+					br.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				 
-			}
-			//Tengo 5 vincenti e creo altri 5
-			//Inverto i ruoli
+				  
+					 
+				}
 			
+			}
+			//Dentro pesi vincenti ho i pesi che hanno vinto andata e ritorno
+			sb.append("GENERAZIONE "+g+ "\n");
+			for(int i = 0; i< pesiVincenti.size(); i++) {
+				sb.append(i+"- ");
+				for(int j = 0 ; j<WEIGHTS; j++) {
+					sb.append(j+ " ");
+				}
+				sb.append("\n");
+			}
 		}
-		//Proseguo con i due giocatori successivi
+
+		PrintWriter pr = null;
+		try {
+			pr = new PrintWriter(new File(pesi));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pr.write(sb.toString());
+		pr.close();
 		
 		
 		
