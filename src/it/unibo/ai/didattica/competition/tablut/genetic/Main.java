@@ -264,7 +264,7 @@ public class Main {
 				sb.append("\n");
 			}
 		}
-
+		System.out.println(sb.toString());
 		PrintWriter pr = null;
 		try {
 			pr = new PrintWriter(new File(pesi));
