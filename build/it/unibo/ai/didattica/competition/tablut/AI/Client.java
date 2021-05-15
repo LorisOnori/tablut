@@ -8,10 +8,21 @@ import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class Client extends TablutClient{
+	//TODO
+	//ALLA FINE HO COMMENTATNO I System.exit e messo i return.
 	
 	private static final String NAME = "Trent";
-	private static int timeOut = 8;
+	private static int timeOut = 10;
 	private final int currentDepthLimit;
+	private static int [] weight = null;
+
+
+	public Client(String player, int [] weight) throws UnknownHostException, IOException {
+		super(player, NAME);
+		Client.weight = weight;
+		currentDepthLimit = 4;
+	}
+
 
 	public Client(String player, int timeout, String ipAddress) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);
@@ -21,13 +32,13 @@ public class Client extends TablutClient{
 
 	public Client(String player, int timeout, String ipAddress, int depth) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);
-		Client.timeOut = timeout - 3;  //Changed
+		Client.timeOut = timeout - 2;  //Changed
 		this.currentDepthLimit = depth;
 	}
 
 	public Client(String player) throws IOException {
 		super(player, NAME);
-		Client.timeOut = 7;
+		Client.timeOut = 8;
 		currentDepthLimit = 4;
 	}
 
@@ -117,13 +128,16 @@ public class Client extends TablutClient{
 					System.out.println("Waiting for your opponent move... ");
 				} else if (this.getCurrentState().getTurn().equals(Turn.WHITEWIN)) {
 					System.out.println(s);
-					System.exit(0);
+					//System.exit(0);
+					return;
 				} else if (this.getCurrentState().getTurn().equals(Turn.BLACKWIN)) {
 					System.out.println(s2);
-					System.exit(0);
+					return;
+					//System.exit(0);
 				} else if (this.getCurrentState().getTurn().equals(Turn.DRAW)) {
 					System.out.println("DRAW!");
-					System.exit(0);
+					//System.exit(0);
+					return;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

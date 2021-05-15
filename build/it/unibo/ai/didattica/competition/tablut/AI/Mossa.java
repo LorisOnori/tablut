@@ -7,7 +7,7 @@ public class Mossa implements Comparator<Mossa>, Comparable<Mossa>{
 	
 	private Board b;
 	private Piece piece;
-	private Board boardAggiornata;
+	private Board boardAggiornata = null;
 	private int oldPos;
 	
 	//Passo la nuova board con l'ultimo pezzo mosso
@@ -21,7 +21,7 @@ public class Mossa implements Comparator<Mossa>, Comparable<Mossa>{
 		this.b = board;
 		this.piece = piece2;
 		this.oldPos = oldPos;
-		this.boardAggiornata = this.calcolaCatture();
+		//this.boardAggiornata = this.calcolaCatture();
 	}
 	
 	public Mossa clone() {
@@ -145,16 +145,12 @@ public class Mossa implements Comparator<Mossa>, Comparable<Mossa>{
 	}
 	
 	public Board getBoardAggiornata() {
+		if(this.boardAggiornata == null)
+			this.boardAggiornata = this.calcolaCatture();
+		
 		return this.boardAggiornata;
 	}
 	
-	
-	public static int eval(Board board) {
-		//TODO
-		//Guardo anche sulla trasposition table per eventuali pareggi
-		//In minmax controllo anche se le mosse sono 0, in quel caso quel giocatore ha perso
-		return (int) Double.NaN;
-	}
 
 
 	@Override
