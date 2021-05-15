@@ -15,7 +15,7 @@ public class Heuristic {
 	private static final int W_DIREZIONI_TORRI_BIANCO = 6;
 	private static final int W_DIREZIONI_TORRI_NERO = 7;
 	private static final int W_BLACK_AROUND_KING = 8;
-	private static final int WEIGHTS = 9;
+	public static final int WEIGHTS = 9;
 	
 //	private static final double W_DIFFERENZA_PEZZI = 300;
 //	private static final double W_DIREZIONI_RE = 20;
@@ -32,7 +32,7 @@ public class Heuristic {
 	
 	public static void setWeight(int [] w) {
 		System.out.println("Weight changed to " );
-		for(int i : weight)
+		for(int i : w)
 			System.out.print(i + " ");
 		System.out.println();
 		Heuristic.weight = w;

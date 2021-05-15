@@ -35,7 +35,9 @@ public class ServerGenetic implements Runnable {
 	/**
 	 * Timeout for waiting for a client to connect
 	 */
-	public static int connectionTimeout = 300;
+	public static int connectionTimeout = 100;
+	public static int WHITE_WON = 100;
+	public static int BLACK_WON = 101;
 
 	/**
 	 * State of the game
@@ -291,7 +293,9 @@ public class ServerGenetic implements Runnable {
 		 * Number of hours that a game can last before the timeout
 		 */
 		int hourlimit = 10;
+		int whoWon = 10000;
 		/**
+		 * 
 		 * Endgame state reached?
 		 */
 		boolean endgame = false;
@@ -395,7 +399,7 @@ public class ServerGenetic implements Runnable {
 			if (t.isAlive()) {
 				System.out.println("Timeout!!!!");
 				loggSys.warning("Closing system for timeout!");
-				System.exit(0);
+				System.exit(50);
 			}
 			
 			white = tc.getSocket();
@@ -421,7 +425,7 @@ public class ServerGenetic implements Runnable {
 			if (t.isAlive()) {
 				System.out.println("Timeout!!!!");
 				loggSys.warning("Chiusura sistema per timeout");
-				System.exit(0);
+				System.exit(51);
 			}
 
 			whiteName = this.gson.fromJson(theGson, String.class);
@@ -455,7 +459,7 @@ public class ServerGenetic implements Runnable {
 			if (t.isAlive()) {
 				System.out.println("Timeout!!!!");
 				loggSys.warning("Closing system for timeout!");
-				System.exit(0);
+				System.exit(52);
 			}
 			black = tc.getSocket();
 			loggSys.fine("Accettata connessione con client giocatore Nero");
@@ -481,7 +485,7 @@ public class ServerGenetic implements Runnable {
 			if (t.isAlive()) {
 				System.out.println("Timeout!!!!");
 				loggSys.warning("Chiusura sistema per timeout");
-				System.exit(0);
+				System.exit(53);
 			}
 
 			blackName = this.gson.fromJson(theGson, String.class);
@@ -576,7 +580,7 @@ public class ServerGenetic implements Runnable {
 				System.out.println("Player " + state.getTurn().toString() + " has lost!");
 				loggSys.warning("Timeout! Player " + state.getTurn() + " lose!");
 				loggSys.warning("Chiusura sistema per timeout");
-				System.exit(0);
+				System.exit(54);
 			}
 
 			// APPLY MOVE
@@ -667,27 +671,37 @@ public class ServerGenetic implements Runnable {
 			case BLACKWIN:
 				this.game.endGame(state);
 				System.out.println("END OF THE GAME");
-				System.out.println("RESULT: PLAYER BLACK WIN");
-				pw.write("BLACK");
-				pw.close();
+				System.out.println("WIN BLACK WIN");
+				//pw.write("BLACK");
+				//pw.close();
+				whoWon = BLACK_WON;
 				endgame = true;
 				break;
 			case WHITEWIN:
 				this.game.endGame(state);
 				System.out.println("END OF THE GAME");
-				System.out.println("RESULT: PLAYER WHITE WIN");
-				pw.write("WHITE");
-				pw.close();
+				System.out.println("WIN WHITE WIN");
+				//pw.write("WHITE");
+				//pw.close();
+				whoWon = WHITE_WON;
 				endgame = true;
 				break;
 			case DRAW:
 				this.game.endGame(state);
 				System.out.println("END OF THE GAME");
 				System.out.println("RESULT: DRAW");
-				int npw = state.getNumberOf(Pawn.WHITE) - 2*state.getNumberOf(Pawn.BLACK);
+				int npw = 2*state.getNumberOf(Pawn.WHITE) - state.getNumberOf(Pawn.BLACK);
 				
 				//Stampa il numero di pedine nere e bianche per vedere chi era in vantaggio
-				pw.write("DRAW "+npw );
+				if(npw >= -1) {
+					System.out.println("WIN WHITE WIN");
+					whoWon = WHITE_WON;
+				
+				}else {
+					System.out.println("WIN BLACK WIN");
+					whoWon = BLACK_WON;
+					
+				}	
 				pw.close();
 				endgame = true;
 				break;
@@ -705,7 +719,7 @@ public class ServerGenetic implements Runnable {
 			e.printStackTrace();
 		}
 		
-		return;
+		System.exit(whoWon);
 	}
 
 }

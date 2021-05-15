@@ -2,13 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/OneDrive - Alma Mater Studiorum Università di Bologna/Fondamenti di Intelligenza Artificiale/aima/release/aima-core.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/Downloads/gson-2.8.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/Downloads/commons-cli-1.4-bin/commons-cli-1.4/commons-cli-1.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/Downloads/commons-cli-1.4-bin/commons-cli-1.4/commons-cli-1.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/Downloads/commons-cli-1.4-bin/commons-cli-1.4/commons-cli-1.4-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/Downloads/commons-cli-1.4-bin/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Loris/Downloads/commons-cli-1.4-bin/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

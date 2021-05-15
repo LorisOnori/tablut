@@ -42,7 +42,17 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 										{4,9},{5,9},{6,9},{5,8},
 										{9,4},{9,5},{9,6},{8,5},center};
 	
+	public final static int [][] zonaProibita1 = {{1,4},{1,5},{1,6},{2,5}};
+	public final static int [][] zonaProibita2 = {{4,1},{5,1},{6,1},{5,2}};
+	public final static int [][] zonaProibita3 = {{4,9},{5,9},{6,9},{5,8}};
+	public final static int [][] zonaProibita4 = {{9,4},{9,5},{9,6},{8,5}};
+	
 	public final static Set<int[]> forbiddenCellsSet = new HashSet<>(Arrays.asList(forbiddenCells));
+	
+	public final static Set<int[]> zonaProibita1Set = new HashSet<>(Arrays.asList(zonaProibita1));
+	public final static Set<int[]> zonaProibita2Set = new HashSet<>(Arrays.asList(zonaProibita2));
+	public final static Set<int[]> zonaProibita3Set = new HashSet<>(Arrays.asList(zonaProibita3));
+	public final static Set<int[]> zonaProibita4Set = new HashSet<>(Arrays.asList(zonaProibita4));
 
 	
 	
@@ -481,16 +491,38 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	}
 	*/
 	
+	public int zonaProibita(int p) {
+		if(Board.zonaProibita1Set.contains(Board.indexToCoordinate(p)))
+			return 1;
+		if(Board.zonaProibita2Set.contains(Board.indexToCoordinate(p)))
+			return 2;
+		if(Board.zonaProibita3Set.contains(Board.indexToCoordinate(p)))
+			return 3;
+		
+		return 4;
+	}
+	
+	public boolean muoveTraZonePoibiteDiverse(Piece p, int position) {
+		if(zonaProibita(p.getPosition()) != zonaProibita(position))
+			return true;
+		else return false;
+	}
+	
 	//Considero se la destinazione del pezzo va bene (non quello che c'ï¿½ di mezzo)
 	public boolean isLegalMove(Piece p, int position) {
 		
 		if(this.board.containsKey(position))
 			return false;
 		
-		if(Board.isForbidden(position) && !p.canMooveInsideForbiddenArea())
+		//Devo controllare che il nero non vada tra zone proibite
+		//TODO
+		if(Board.isForbidden(position) && !p.canMooveInsideForbiddenArea()) {
 			return false;
-		else 
+		}else if(Board.isForbidden(position) && p.canMooveInsideForbiddenArea() && muoveTraZonePoibiteDiverse(p, position)) { 
+			return false;
+		}else {
 			return true;
+		}
 		
 	}
 	
@@ -584,7 +616,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 					for(int m : moves) {
 						//Devo creare sempre una nuova board
 						//altrimenti i pezzi li muovo sempre sulla stessa
-						//Quindi anche in diagonale perchè vedo due mosse sulla stessa board
+						//Quindi anche in diagonale perchï¿½ vedo due mosse sulla stessa board
 						//FORSE
 						//--------------------------------- DA CONTROLLARE ---------- (anche sotto in BLACK) -----
 						newBoard = this.clone();

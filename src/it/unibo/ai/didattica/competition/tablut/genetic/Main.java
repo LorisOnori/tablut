@@ -19,6 +19,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+
 import it.unibo.ai.didattica.competition.tablut.AI.Client;
 import it.unibo.ai.didattica.competition.tablut.AI.ClientBlack;
 import it.unibo.ai.didattica.competition.tablut.AI.ClientGenetic;
@@ -56,239 +58,105 @@ public class Main {
 	private static final int W_BLACK_AROUND_KING = 8;
 	private static final int WEIGHTS = 9;
 	
+	private static final int SQUADRE = 8;
+	
 	private static int [] weightBase = {300, 20,3,10,8,4,4,2,50};
 
 	
-	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
+	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException, IOException {
+//		
+//		//jar location Server - Client
+//		if(args.length != 2) {
+//			System.out.println("Exit");
+//			System.exit(1);
+//		}else {
+//			System.out.println(args[0] + " \n"+ args[1]);
+//		}
+//		
+//		
+//		
+//		//TORNEO
+//		List<int[]> pesiSquadre = new ArrayList<>();
+//		List<int []> toPlay = new ArrayList<>();
+//		List<int []> winners = new ArrayList<>();
+//		
+//		pesiSquadre.add(weightBase);
+//		
+//		for(int i = 0 ; i< SQUADRE-1; i++) {
+//			pesiSquadre.add(generaPesi());
+//			
+//		}
+//		
+//		for(int []i : pesiSquadre)
+//			toPlay.add(i);
+//		
+//		ProcessBuilder pb = new ProcessBuilder();
+//		int turno = SQUADRE/2;
+//		BufferedReader br;
+//		
+//		while(turno >= 1) {
+//			
+//			Collections.shuffle(toPlay);
+//			for(int i  =0 ; i< turno; i++) {
+//				int j = i*2;
+//				System.out.println("Turno " + turno + " round "+ i+ "\n"+getPesiStringa(toPlay.get(j))+ "\n		VS\n"+getPesiStringa(toPlay.get(j+1))	);
+//
+//				Process s = Runtime.getRuntime().exec("java -jar "+args[0]);
+//				//pb.command("java", "-jar ", args[0]);
+//				//Process s = pb.start();
+//				TimeUnit.MILLISECONDS.sleep(2000);
+//				Runtime.getRuntime().exec("java -jar "+args[1] + " WHITE "+getPesiStringa(toPlay.get(j)));
+//				//pb.command("java", "-jar ", args[1] , "WHITE", getPesiStringa(toPlay.get(i)));
+//				//pb.start();
+//				TimeUnit.MILLISECONDS.sleep(2000);
+//				Runtime.getRuntime().exec("java -jar "+args[1] + " BLACK "+getPesiStringa(toPlay.get(j+1)));
+//				//pb.command("java", "-jar", args[1] , "BLACK", getPesiStringa(toPlay.get(i+1)));
+//				//pb.start();
+//				
+//				
+//				int val = s.waitFor();
+//				System.out.println("VAL : "+val);
+//				//Leggo il risultato
+//				//br = new BufferedReader(new FileReader(ServerGenetic.resultPath));
+//				//String res = br.readLine();
+//				
+//				if(val == ServerGenetic.WHITE_WON) {
+//					winners.add(toPlay.get(j));
+//					System.out.println("Turno " + turno + " round "+ i+ " ha vinto WHTIE con pesi "+getPesiStringa(toPlay.get(j)));
+//				}else if(val == ServerGenetic.BLACK_WON){
+//					winners.add(toPlay.get(j+1));
+//					System.out.println("Turno " + turno + " round "+ i+ " ha vinto BLACK con pesi "+getPesiStringa(toPlay.get(j+1)));
+//
+//				}else {
+//					System.out.println("ERRORE");
+//					System.exit(-1);
+//				}
+//				
+//				
+//				
+//				
+//			
+//			}
+//			
+//			
+//			turno = turno /2;
+//			toPlay = new ArrayList<>();
+//			for(int []i : winners)
+//				toPlay.add(i);
+//				
+//			
+//			
+//		}
 		
-		List<int[]> pesiVincenti = new ArrayList<>();
-		List<int[]> newPop = new ArrayList<>();
-		File filePesi = new File(pesi);
-		try {
-			filePesi.createNewFile();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		
+		for(int i = 0; i< 7; i++) {
+			System.out.println(getPesiStringa(generaPesi()));
 		}
-		StringBuilder sb = new StringBuilder();
-
-		
-		/*****
-		 * 
-		 * Devo selvare i pesi da passare ai clienti
-		 * Quando finisco il primo ciclo creo 5 nuovi giocatori e lascio i 5 vincenti
-		 * Inverto le parti di gioco --> Se era un vincente col bianco, ora gioca col nero e così via
-		 * 
-		 */
-		
-		
-		for(int g = 0; g < generation; g++) {
-			System.out.println("GENERAZIONE "+g);
-			if(g == 0) {
-				for(int i = 0; i<population; i++) {
-					newPop.add(generaPesi());
-				}
-			}else {
-				//MUTAZIONI VARIE
-				Collections.shuffle(pesiVincenti);
-				
-				
-				for(int i = 0 ; i< pesiVincenti.size() && pesiVincenti.size() > 1; i++) {
-					int [] v1 = pesiVincenti.get(i);
-					int [] v2 = null;
-					int [] v3 = new  int[WEIGHTS];
-					try {
-						v2 = pesiVincenti.get(i+1);
-					}catch(IndexOutOfBoundsException e) {
-						newPop.add(v1);
-						break;
-					}
-					
-					for(int w = 0 ;  w < WEIGHTS; w++) {
-						if(w <= 4)
-							v3[w] = v1[w];
-						else
-							v3[w] = v2[w];
-						
-						Random r = new Random(System.currentTimeMillis());
-						if(r.nextInt(100) +1 <= 3)
-							if(w == 0 || w == 8)
-								v3[w] = getRandom(v3[w],200);
-							else
-								v3[w] = getRandom(v3[w],20);	
-						
-					}
-					newPop.add(v3);
-				}
-				
-				//Fine mutazione
-				for(int i = newPop.size() ; i< population; i ++) {
-					newPop.add(generaPesi());
-				}
-				Collections.shuffle(newPop);
-				pesiVincenti = new ArrayList<>();
-				
-			}
-			
-			for(int p = 0; p<population/2; p++) {
-				
-				//Match andata-ritorno
-				int [] w1 = newPop.get(p);
-				int [] w2 = newPop.get(p+1);
-				
-				boolean vintoAndata = false;
-				for(int m = 0 ; m < 2 ; m++) {
-					
-					
-					
-					 ExecutorService executorService = Executors.newCachedThreadPool();
-			
-					 Future server = executorService.submit( () -> {
-					         ServerGenetic.main(new String[0]);
-					 });
-					 TimeUnit.MILLISECONDS.sleep(500);
-					 
-					 if(m == 0) {
-						 executorService.submit( () -> {
-						       try {
-						    		   ClientGenetic.main(true, w1);    		   
-						       } catch (Exception e) {
-						           System.out.println("white exception");
-						           e.printStackTrace();
-						       }
-					       });
-					 }else {
-						 executorService.submit( () -> {
-						       try {
-						   		   ClientGenetic.main(true, w2);	   
-						       } catch (Exception e) {
-						           System.out.println("white exception");
-						           e.printStackTrace();
-						       }
-					       });
-					 }
-				      
-					 
-					if( m == 0) {
-						 executorService.submit( () -> {
-						       try {
-						    		ClientGenetic.main(false, w2);
-						       } catch (Exception e) {
-						           System.out.println("black exception");
-						           e.printStackTrace();
-						       }
-						       }).get(14, TimeUnit.MINUTES);
-					}else {
-						 executorService.submit( () -> {
-						       try {
-						    	ClientGenetic.main(false, w1);
-						       } catch (Exception e) {
-						           System.out.println("black exception");
-						           e.printStackTrace();
-						       }
-						       }).get(14, TimeUnit.MINUTES);
-					}
-
-				   
-				   //Aspetto 10 minuti che finisce la partita
-					TimeUnit.SECONDS.sleep(3);
-				   System.out.println("PARTITA FINITA");
-				   
-				   executorService.shutdownNow();
-				   
-				   //Controllo i risuolati sul file scritto dal server
-				   BufferedReader br = null;
-				   try {
-						br = new BufferedReader(new FileReader(new File(ServerGenetic.resultPath)));
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					   
-				   try {
-					String ln = br.readLine();
-					if(ln.equalsIgnoreCase("WHITE")) {
-						if(m == 0)
-							vintoAndata = true;
-						else { //secondo giro (ritorno)
-							if(!vintoAndata) {//prima ha vinto sempre lui con il nero
-								pesiVincenti.add(w2);
-							}
-						}
-							
-					}else if(ln.equalsIgnoreCase("BLACK")) {
-						if(m == 0)
-							vintoAndata = false;
-						else { //secondo giro (ritorno)
-							if(vintoAndata) {//prima ha vinto sempre lui con il bianco
-								pesiVincenti.add(w1);
-							}
-						}
-					}else {
-						StringTokenizer st = new StringTokenizer(ln);
-						st.nextToken();
-						//W - 2*B > 0 vince white altrimenti black
-						int diff = Integer.parseInt(st.nextToken());
-						if(diff > 0) { //Bianco vince
-							if(m == 0)
-								vintoAndata = true;
-							else { //secondo giro (ritorno)
-								if(!vintoAndata) {//prima ha vinto sempre lui con il nero
-									pesiVincenti.add(w2);
-								}
-							}
-						}else {//Nero vince
-							if(m == 0)
-								vintoAndata = false;
-							else { //secondo giro (ritorno)
-								if(vintoAndata) {//prima ha vinto sempre lui con il nero
-									pesiVincenti.add(w1);
-								}
-							}
-						}
-					}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				   try {
-					br.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				  
-					 
-				}
-			
-			}
-			//Dentro pesi vincenti ho i pesi che hanno vinto andata e ritorno
-			sb.append("GENERAZIONE "+g+ "\n");
-			for(int i = 0; i< pesiVincenti.size(); i++) {
-				sb.append(i+"- ");
-				for(int j = 0 ; j<WEIGHTS; j++) {
-					sb.append(j+ " ");
-				}
-				sb.append("\n");
-			}
-		}
-		System.out.println(sb.toString());
-		PrintWriter pr = null;
-		try {
-			pr = new PrintWriter(filePesi);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		pr.write(sb.toString());
-		pr.close();
 		
 		
 		
-		/***********************/
 		
-		//Quando terminato il primo giro faccio tutte le mutazioni e continuo,
-		//
+		
 		
 		
 
@@ -310,12 +178,48 @@ public class Main {
 	}
 	
 	public static int getRandom(int base, int range) {
-		Random r = new Random(System.currentTimeMillis());
+		Random r = new Random(System.nanoTime());
 		
 		int segno = r.nextBoolean() ? 1 : -1;
 		
-		return segno * (base + r.nextInt(range)+1 * 2 - range);
+		return base + (segno * (r.nextInt(range)+1));
 		
 	}
+	
+	public static String getPesiStringa(int []p) {
+		String s = "";
+		for(int i : p)
+			s += i + " ";
+		return s;
+	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
