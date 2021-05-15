@@ -1,0 +1,24 @@
+May 12, 2021 4:03:16 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Accensione server
+May 12, 2021 4:03:16 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Partita di Tablut
+May 12, 2021 4:03:16 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Waiting for white connection..
+May 12, 2021 4:03:17 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: White player connected
+May 12, 2021 4:03:17 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura nome player bianco in corso..
+May 12, 2021 4:03:17 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: White player name:	Trent
+May 12, 2021 4:03:17 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Waiting for Black connection..
+May 12, 2021 4:03:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Accettata connessione con client giocatore Nero
+May 12, 2021 4:03:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura nome player nero in corso..
+May 12, 2021 4:03:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Black player name:	Trent
+May 12, 2021 4:03:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai giocatori
+May 12, 2021 4:03:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..

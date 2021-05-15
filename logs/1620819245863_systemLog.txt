@@ -1,0 +1,8 @@
+May 12, 2021 1:34:05 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Accensione server
+May 12, 2021 1:34:05 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Partita di Tablut
+May 12, 2021 1:34:05 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+WARNING: Errore connessioni
+May 12, 2021 1:34:05 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+WARNING: Chiusura sistema
