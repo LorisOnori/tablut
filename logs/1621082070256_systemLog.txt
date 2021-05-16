@@ -1,0 +1,8 @@
+May 15, 2021 2:34:30 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Accensione server
+May 15, 2021 2:34:30 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Partita di Tablut
+May 15, 2021 2:34:30 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Waiting for white connection..
+May 15, 2021 2:39:30 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+WARNING: Closing system for timeout!

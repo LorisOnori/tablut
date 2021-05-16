@@ -16,25 +16,6 @@ import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class Minmax {
-
-	//Minmax
-	
-	//Iterative deepening 
-	
-	//AlphaBeta pruning
-	
-	//Transposition Table
-	
-	/*
-	 * 
-	 * Minmax -> Passo Board non aggiornata
-	 * 		Iterative: Controllo se c'è un vincitore in quel caso return
-	 * 					Calcolo mossa
-	 * 					Valuto
-	 * 
-	 */
-	
-	//Adesso la mossa viene valutata prima
 	
 	
 	private Board board;
@@ -46,13 +27,10 @@ public class Minmax {
 	private static Minmax INSTANCE = null;
 	private static final int NUMERO_TORRI_BIANCHE = 8;
 	private static final int NUMERO_TORRI_NERE = 16;
-	//Posso svuotarla quando un pezzo viene mangiato
 	private static Map<Board, Integer> traspositionTable;
 	private static Map<Board, Integer> posizioniPassate;
 	private static int torriBianche = Minmax.NUMERO_TORRI_BIANCHE;
 	private static int torriNere = Minmax.NUMERO_TORRI_NERE;
-	
-	// HEURISTIC
 
 	
 	
@@ -98,7 +76,6 @@ public class Minmax {
 	
 	public Mossa iterative(Board board, Player player){
 		
-		//Genero figlio
 		this.minmaxCount = 0;
 		Minmax.devoRitornare = false;
 		Callable<Mossa> callable = new Child(board, player);
@@ -107,14 +84,10 @@ public class Minmax {
 		try {
 			TimeUnit.SECONDS.sleep(Client.getTimeOut());
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		Minmax.devoRitornare = true;
-		//Interrupt callable
-		//executorService.shutdownNow();
-		//executorService = Executors.newCachedThreadPool();
 		
 	
 		try {
@@ -128,7 +101,7 @@ public class Minmax {
 		}
 
 		Minmax.devoRitornare = false;
-		System.out.println("MINMAX NON HA FUNZIONATO");
+		//System.out.println("MINMAX NON HA FUNZIONATO");
 		return this.board.getNextMovesByPlayer(player).get(0);
 		
 	}
@@ -136,13 +109,13 @@ public class Minmax {
 	
 	public int minmax(Board brd, int depth,int  alpha, int beta, Player player) {
 		this.minmaxCount ++;
-		if(depth == 0) {
+		if(depth == 0 || Minmax.devoRitornare) {
 			if(traspositionTable.containsKey(brd))
 				return traspositionTable.get(brd);
 			else {
 				int ev = (int) Heuristic.eval(brd, player);
 				
-				traspositionTable.put(brd, ev);
+				//traspositionTable.put(brd, ev);
 				return ev;
 			}
 				
@@ -152,9 +125,7 @@ public class Minmax {
 		//MAX
 		if(player == Player.WHITE) {
 			
-			value = MIN; //Giocatore ha perso se non ci sono mosse (Non si entra nel ciclo sotto)
-			
-			//Ordinamento Figli senza instanziare ancora
+			value = MIN; 
 			
 			
 			List<Mossa> mosse= brd.getNextMovesByPlayer(Player.WHITE);
@@ -182,7 +153,6 @@ public class Minmax {
 			//BLACK MIN
 			value = MAX;
 			List<Mossa> mosse= brd.getNextMovesByPlayer(Player.BLACK);
-			//Se mosse == null --> Non si può fare nessuna mossa quindi NERO perde
 			if(mosse == null)
 				return MAX;
 			Collections.sort(mosse);
@@ -203,13 +173,6 @@ public class Minmax {
 			
 		}
 	}
-	
-	//Test
-
-		
-	//Nella genereazione di mosse (non qui) posso valutare tutte le mosse e ordinarle in base alla differenza pezzi che dovrebbe essere l'indice piï¿½ importate
-	//Minmax quindi esplora prima queste mosse e poi le altre.
-	//Valuta la posizione corrente
 
 	
 	
@@ -224,9 +187,6 @@ public class Minmax {
 			int tb = board.getWhiteRooksCount();
 			int tn = board.getBlackRooksCount();
 			
-			//Se catturo un pezzo allora le nuove posizioni saranno sicuramente diverse
-			//Così come quelle valutate
-			//Libero la memoria
 			if(tb != torriBianche || tn != torriNere) {
 				resetPosizioniPassate();
 				resetTranspositionTable();
@@ -241,82 +201,38 @@ public class Minmax {
 		public Mossa call() throws Exception {
 			
 			
-			//System.out.println("Parto");
-			//Prendo il tempo adesso provo con profonditï¿½
-			int depth = TEST_DEPTH;
+			//int depth = TEST_DEPTH;
 
-			//Data una board prendo tutte le mosse possibili
-			//Chiamo il minmax per ognuna di queste mosse cosï¿½ da ottenere la valutazione
-			//salvo i risultati
 			
 			List<Mossa> mosse = board.getNextMovesByPlayer(player);
-			//Attenzione al sort perchï¿½ calcolando la eval qui
-			//rischio di sprecare tanto tempo
-			
-			//Uso un'eval piï¿½ veloce
-			//Adesso considero solo la differenza dei pezzi
-			
-			//Sort --> Controllo se salvando la eval completa sulla mappa con livallo 0 guadagno
-			//System.out.println();
-//			Collections.sort(mosse);
-//			if(Player.WHITE == player)
-//				Collections.reverse(mosse);
+
+			Collections.sort(mosse);
+			if(Player.WHITE == player)
+				Collections.reverse(mosse);
 			
 			
 			//RANDOM
-			Collections.shuffle(mosse);
+			//Collections.shuffle(mosse);
 			
 			int val; 
 			int best = Player.WHITE == player ? MIN : MAX; 
 			Mossa res = mosse.get(0);
 			
-			//Da parallelizzare e ottimizzare con l'ordinamento delle mosse e un db per i risultati parziali e finali
-			//long inizio = System.currentTimeMillis();
+
 			
-//			for(int i = 0; i<TEST_DEPTH; i++) {
-//				val = minmax(board, i, MIN, MAX, player);
-//				
-//				if(player == Player.WHITE) {
-//					if(val > best ) {
-//						best = val;
-//						res = m;
-//					}
-//				}else { //BLACK
-//					if(val < best) {
-//						best = val;
-//						res = m;
-//					}
-//				}
-//			}
-			
-			for(int i= 1; ; i++) { // -----> Cambiare la profonditï¿½ con il tempo
-				//System.out.println("Iterative depth "+i);
-				
-				//QUESTO SOTTO E PARZIALMENTE SBAGLIATO
-				
-				//Qua genero le prime mosse e dopo chiamo minmax che me le rigenera sempre le stesse mosse
-				
-				//Una soluzione potrebbe essere quella di chiamare direttamente minmax e vedere il pezzo che è stato mosso
-				//Controllando le due board vedo il pezzo che non è in comune e rappresenta la partenza e l'arrivo.
-				//Però adesso minmax ritorna solamente il valore di una mossa ma non so quale
-				//Dovrei modificare minmax per far ritornare anche il pezzo relativo a tale mossa
-				//Oppure far partire minmax dal giocatore opposto e il ciclo for dell'iterative deepening da 1 invece che da 0
-				//Con 8 pezzi e TEST_DEPTH = 3 ci mette 1 secondo nella versione con due calcoli di mosse 
-				
-				
-				
+			for(int i= 1; ; i++) { 
+	
+				System.out.println(i);
 				
 				for(Mossa m : mosse){
 					//System.out.println("b");
 					if(Minmax.devoRitornare) {
-						System.out.println("Ritorno profondita "+ i + " minmax count "+minmaxCount);
 						return res;
 					}
 					
 					if(m.getBoardAggiornata().whiteWin())
 						val = MAX;
 					else if(m.getBoardAggiornata().blackWin()) {
-						System.out.println(m.getPiece().getRow() + " "+m.getPiece().getColumn());
 						val = MIN;
 					}else {
 						Player p = player == Player.WHITE ? Player.BLACK : Player.WHITE;
@@ -337,8 +253,7 @@ public class Minmax {
 					
 				}
 			}
-			//System.out.println("DURATA : " + (System.currentTimeMillis()-inizio));
-			//return res;
+
 
 		}
 		

@@ -36,16 +36,6 @@ public class Main {
 	
 	private static final double DIFF  = 16/8;
 	
-//	private static final double W_DIFFERENZA_PEZZI = 300;
-//	private static final double W_DIREZIONI_RE = 20;
-//	private static final double W_POSIZIONI_OCC_RE = 3;
-//	private static final double W_DISTANZA_GOAL = 10;
-//	private static final double W_POSIZIONI_OCCUPABILI_TORRI_BIANCO = 4 * DIFF;
-//	private static final double W_POSIZIONI_OCCUPABILI_TORRI_NERO = 4 ;
-//	private static final double W_DIREZIONI_TORRI_BIANCO = 2 * DIFF;
-//	private static final double W_DIREZIONI_TORRI_NERO = 2;
-//	private static final double W_BLACK_AROUND_KING = 50;
-	
 	//INDEX
 	private static final int W_DIFFERENZA_PEZZI = 0;
 	private static final int W_DIREZIONI_RE = 1;
@@ -60,7 +50,8 @@ public class Main {
 	
 	private static final int SQUADRE = 8;
 	
-	private static int [] weightBase = {300, 20,3,10,8,4,4,2,50};
+	private static int [] weightBase = {300, 20,3,10,8,-4,4,-2,-50};
+	
 
 	
 	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException, IOException {

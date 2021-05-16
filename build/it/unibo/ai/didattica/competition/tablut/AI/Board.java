@@ -31,6 +31,8 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	public final static Set<int[]> finalCellsSet = new HashSet<>(Arrays.asList(finalCells));
 	
 	
+	
+	
 	public final static int [] center = {5,5};
 	public final static int EST_CENTER_POS = 42;
 	public final static int OVEST_CENTER_POS = 40;
@@ -42,7 +44,24 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 										{4,9},{5,9},{6,9},{5,8},
 										{9,4},{9,5},{9,6},{8,5},center};
 	
+	public final static int [][] wallCells = {{1,4},{1,6},{2,5},
+												{4,1},{6,1},{5,2},
+												{4,9},{6,9},{5,8},
+												{9,4},{9,6},{8,5},center};
+	
+	public final static Set<int[]> wallCellsSet = new HashSet<>(Arrays.asList(wallCells));
+	
+	public final static int [][] zonaProibita1 = {{1,4},{1,5},{1,6},{2,5}};
+	public final static int [][] zonaProibita2 = {{4,1},{5,1},{6,1},{5,2}};
+	public final static int [][] zonaProibita3 = {{4,9},{5,9},{6,9},{5,8}};
+	public final static int [][] zonaProibita4 = {{9,4},{9,5},{9,6},{8,5}};
+	
 	public final static Set<int[]> forbiddenCellsSet = new HashSet<>(Arrays.asList(forbiddenCells));
+	
+	public final static Set<int[]> zonaProibita1Set = new HashSet<>(Arrays.asList(zonaProibita1));
+	public final static Set<int[]> zonaProibita2Set = new HashSet<>(Arrays.asList(zonaProibita2));
+	public final static Set<int[]> zonaProibita3Set = new HashSet<>(Arrays.asList(zonaProibita3));
+	public final static Set<int[]> zonaProibita4Set = new HashSet<>(Arrays.asList(zonaProibita4));
 
 	
 	
@@ -81,38 +100,18 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	
 	public Board(String s, int nRow, int nColumns) {
-		
-		//Get all the infos from the data
-		//riempo board
-		
 		Board.nColumns = nColumns;
 		Board.nRow = nRow;
-		
-		//Probabilmente facendo cosï¿½, ogni volta che ricevo una nuova posizione aggiorno solamente quella precedente
-		//e non ricreo Board da capo
-		
-		
-		//TODO magari non stringa ma direttamente la mappa
-		this.updateBoard();
-		
-		
-		
-		
+		this.updateBoard();	
 	}
 	
 	public Board(HashMap<Integer,Piece> board) {
 		this.board = board;
-		//this.board = new HashMap<>();
-		//for(int k : board.keySet())
-		//	this.board.put(k, board.get(k));
-		//TODO magari non stringa ma direttamente la mappa
-		this.updateBoard();
-		
+		this.updateBoard();	
 	}
 	
 	public static boolean isForbidden(int r, int c) {
 		for(int[] f : Board.forbiddenCellsSet) {
-			//System.out.println("R "+r + " C " +c+ " f[0] " + f[0] + " f[1] "+ f[1]);
 			if(r == f[0] && c == f[1])
 				return true;
 		}
@@ -123,6 +122,20 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		int p[];
 		p = Board.indexToCoordinate(index);
 		return Board.isForbidden(p[0], p[1]);
+	}
+	
+	public static boolean isWall(int r, int c) {
+		for(int[] f : Board.wallCellsSet) {
+			if(r == f[0] && c == f[1])
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean isWall(int index) {
+		int p[];
+		p = Board.indexToCoordinate(index);
+		return Board.isWall(p[0], p[1]);
 	}
 	
 	public boolean removePiece(int p, Type t) {
@@ -149,11 +162,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return this.removePiece(p.getPosition(), p.getType());
 	}
 	
-	//Magari non stringa ma direttamente la maooa
 	public void updateBoard() {
-		
-		///
-		
 		for(Piece p : this.board.values()) {
 			if(p.getType() == Type.BLACK_ROOK) {
 				this.blackPieces++;
@@ -176,9 +185,8 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			return this.board.get(p);
 	}
 	
-	// 1 to Row
 	public Piece[] getFullRow(int r) {
-		int inizio = r * nColumns + 1; //Se riga 4 -> pezzi dal 37 al 45 compresi
+		int inizio = r * nColumns + 1;
 		int fine = inizio + nColumns - 1;
 		
 		Piece[] ret = new Piece[nColumns];
@@ -195,7 +203,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return ret;
 	}
 	
-	//1 to Column
+
 	public Piece[] getFullColumn(int c) {
 
 		Piece[] ret = new Piece[nRow];
@@ -230,8 +238,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		
 		return val;
 	}
-	
-	//public getAllPieces() 	
+		
 
 	
 	public int getWhiteRooksCount() {
@@ -252,15 +259,6 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return val;
 	}
 	
-/*	public int rookDifferenceCount() { //Senza contare il re
-		int val = 0;
-		for(Piece p : board.values()) {
-			if(p.getType() == Type.WHITE_ROOK)
-				val ++;
-			else val--;
-		}
-		return val+1; //Il re altrimenti ï¿½ contato come nero
- 	}*/
 	
 	public boolean canWhiteWin() {
 		
@@ -296,7 +294,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		int val;
 		int []kingPos = Board.indexToCoordinate(this.kindPosition);
 		for(int [] pos : Board.finalCellsSet) {
-			//xKing - xObj ---- yKing - yObj
+			
 			val = Math.abs(kingPos[1] - pos[1]) + Math.abs(kingPos[0] - kingPos[0]);
 			min = val < min ? val : min;
 		}
@@ -363,21 +361,17 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return spazi[Board.NORD] + spazi[Board.SUD] + spazi[Board.EST] +spazi[Board.OVEST];
 	}
 	
-	/*public int getNextPieceInRaw(int r) {
-		
-	}
-	*/
 	
 	public int[] getRooksByPlayer(Player player) {
 		
 		int index = 0;
 		int[] position = null;
-		//List<Integer> pos = new ArrayList<>();
+		
 		if(player == Player.WHITE) {
 			position = new int[Board.WHITE_ROOK_NUMBER];
 			for(Piece p : this.board.values()) {
 				if(p.getType() == Type.WHITE_ROOK) {
-					//pos.add(p.getPosition());
+					
 					position[index] = p.getPosition();
 					index++;
 				}
@@ -394,19 +388,14 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		}
 		return position;
 	}
-	
-	/*public int getNextPieceInColumn() {
-		
-	}
-	*/
+
 	
 	public int[] numberOfOccupiableCells(int pos) {
 		int []p = Board.indexToCoordinate(pos);
 		return this.numberOfOccupiableCells(p[0], p[1]);
 	}
 	
-	//Distanza del prossimo ostacolo, amico o nemico che sia -> Numero di caselle occupabili per direzione
-	//Non posso attraversare le zone proibite
+
 	public int[] numberOfOccupiableCells(int r, int c) {
 		int[] ret = new int[Board.DIREZIONI];
 		for(int i = 0; i < ret.length; i++) {
@@ -420,9 +409,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			//NORD
 			int nord = 0;
 			for(int i = r+1 ; i <= Board.nRow; i++) {
-				//Non posso andare se c'ï¿½ un pezzo -> ï¿½ nella board oppure se fa parte della caselle proibite e io non posso andarci
-				//Posso eventualmente attravesrare le zone proibite
-				//Ma non posso se c'ï¿½ un pezzo
+
 				if(board.containsKey(Board.coordinateToIndex(i, c)))
 					break;//Pezzo presente non posso passare
 				else if((Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
@@ -434,7 +421,6 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			//SUD
 			int sud = 0;
 			for(int i = r-1 ; i > 0; i--) {
-				//Non posso andare se c'ï¿½ un pezzo -> ï¿½ nella board oppure se fa parte della caselle proibite e io non posso andarci
 				if(board.containsKey(Board.coordinateToIndex(i, c)))
 					break;
 				else if((Board.isForbidden(i, c) && !pezzo.canMooveInsideForbiddenArea()))
@@ -447,8 +433,6 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			//EST 
 			int est = 0;
 			for(int i = c+1 ; i <= Board.nColumns; i++) {
-				//Non posso andare se c'ï¿½ un pezzo -> ï¿½ nella board oppure se fa parte della caselle proibite e io non posso andarci
-				//boolean can = Board.forbiddenCellsSet.contains(new int[] {r,i});
 				if(board.containsKey(Board.coordinateToIndex(r, i)))
 					break;
 				else if((Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
@@ -461,7 +445,6 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			//OVEST
 			int ovest = 0;
 			for(int i = c-1 ; i > 0; i--) {
-				//Non posso andare se c'ï¿½ un pezzo -> ï¿½ nella board oppure se fa parte della caselle proibite e io non posso andarci
 				if(board.containsKey(Board.coordinateToIndex(r, i)))
 					break;
 				else if((Board.isForbidden(r, i) && !pezzo.canMooveInsideForbiddenArea()))
@@ -475,22 +458,36 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return ret;
 	}
 	
-	/*
-	public int getDistanceOfNextObstacleInRawByPlayer(int r, Player player) {
-		
-	}
-	*/
 	
-	//Considero se la destinazione del pezzo va bene (non quello che c'ï¿½ di mezzo)
+	public int zonaProibita(int p) {
+		if(Board.zonaProibita1Set.contains(Board.indexToCoordinate(p)))
+			return 1;
+		if(Board.zonaProibita2Set.contains(Board.indexToCoordinate(p)))
+			return 2;
+		if(Board.zonaProibita3Set.contains(Board.indexToCoordinate(p)))
+			return 3;
+		
+		return 4;
+	}
+	
+	public boolean muoveTraZonePoibiteDiverse(Piece p, int position) {
+		if(zonaProibita(p.getPosition()) != zonaProibita(position))
+			return true;
+		else return false;
+	}
+	
 	public boolean isLegalMove(Piece p, int position) {
 		
 		if(this.board.containsKey(position))
 			return false;
 		
-		if(Board.isForbidden(position) && !p.canMooveInsideForbiddenArea())
+		if(Board.isForbidden(position) && !p.canMooveInsideForbiddenArea()) {
 			return false;
-		else 
+		}else if(Board.isForbidden(position) && p.canMooveInsideForbiddenArea() && muoveTraZonePoibiteDiverse(p, position)) { 
+			return false;
+		}else {
 			return true;
+		}
 		
 	}
 	
@@ -498,12 +495,9 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return this.isLegalMove(p, Board.coordinateToIndex(row, column));
 	}
 	
-	//Attento se ritorna null
-	//Ritorna tutte le coordinate di arrivo del possibile pezzo
 	public int[] possibleMovesByPiece(Piece p) {
 		List<Integer> moves = new ArrayList<>();
 		
-		//da 1 a 9, l'incremento puï¿½ essere solo di riga o di colonna
 		int row = p.getRow();
 		int column = p.getColumn();
 				
@@ -559,44 +553,30 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 		return res;
 	}
 	
-	//TODO
-	//Devo controllare se al seguito di una mossa un pezzo viene mangiato
-	//In quel caso devo rimuoverlo
-	//Perï¿½ quando mando la risposta il mezzo FORSE deve rimanere
-	//Poi il server mi risponde senza il pezzo catturato
-	
-	//Ritorno tutte le mosse possibili
-	//Valuto tutte le mosse 
-	//Ordino le mosse
-	//Minmax
+
 	public List<Mossa> getNextMovesByPlayer(Player player){
 		HashMap<Integer, Piece> newBoard;
 		List<Mossa> result = new ArrayList<>();
 		int []moves;
 		if(player == Player.WHITE) {
-			//System.out.println(this.board.keySet());
+
 			for(Integer p: this.board.keySet()) {
 				Piece piece = getCell(p);
-				//System.out.println("Piece "+piece.getType()+ " coord r " + piece.getRow()+ " c "+piece.getColumn());
+
 				if(piece.getType() == Type.WHITE_ROOK || piece.getType() == Type.KING) {
 					moves = this.possibleMovesByPiece(piece);
-					//System.out.println();
+
 					for(int m : moves) {
-						//Devo creare sempre una nuova board
-						//altrimenti i pezzi li muovo sempre sulla stessa
-						//Quindi anche in diagonale perchè vedo due mosse sulla stessa board
-						//FORSE
-						//--------------------------------- DA CONTROLLARE ---------- (anche sotto in BLACK) -----
+
 						newBoard = this.clone();
 						int oldPos = piece.getPosition();
 						newBoard.remove(piece.getPosition());
-						//errore nuovo pezzo
-						//piece.setPosition(m);
+
 						
 						Piece newPiece = new Piece(piece.getType(), m);
 						newBoard.put(m, newPiece);
 						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
-						//System.out.println("oldPos "+oldPos+" m "+ m);
+
 					}
 				}
 			}
@@ -606,12 +586,12 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 				if(piece.getType() == Type.BLACK_ROOK) {
 					moves = this.possibleMovesByPiece(piece);
 					for(int m : moves) {
-						//FORSE
+
 						newBoard = this.clone();
 						int oldPos = piece.getPosition();
 						Piece newPiece = new Piece(piece.getType(), m);
 						newBoard.remove(piece.getPosition());
-						//piece.setPosition(m);
+
 						newBoard.put(m, newPiece);
 						result.add(new Mossa(new Board(newBoard), newPiece, oldPos));
 					}
@@ -619,8 +599,6 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 			}
 		}
 		if(result.isEmpty())
-			//Nessuno mossa possibile, quel giocatore ha perso
-			//TODO
 			return null;
 		
 		return result;
@@ -629,9 +607,7 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	public static int[] indexToCoordinate(int index) {
 		index--;
 		int r = index / nColumns + 1 ;
-		//r = r > Board.nRow ? r-1 : r; 
 		int c = index - nRow * (r-1) + 1;
-		//c = c > Board ? c+1 : c;
 		
 		return new int[]{r,c};
 	}
@@ -658,23 +634,19 @@ public class Board implements Comparable<Board>, Comparator<Board>{
 	
 	public boolean blackWin() {
 			//BLACK WIN
-			
-			//ultimo controllo se:
-			//f k b
-			//b k f
-			//e dall'alto in basso
-			int []k = Board.indexToCoordinate(this.kindPosition);
-			if(this.blackAroundKing() == 4)
-				return true;
-			else if(this.blackAroundKing() == 3 && (this.kindPosition == Board.NORD_CENTER_POS || this.kindPosition == Board.EST_CENTER_POS || this.kindPosition == Board.SUD_CENTER_POS || this.kindPosition == Board.OVEST_CENTER_POS))
-				return true;
-			else if(k[0] > 1 && this.getCell(k[0]+1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]-1, k[1])  
-					||  k[0] < 9 && this.getCell(k[0]-1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]+1, k[1]) 
-					||  k[1] > 1 && this.getCell(k[0], k[1]+1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]-1)  
-					||  k[1] < 9 && this.getCell(k[0], k[1]-1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]+1) ){
-				return true;
-			}else
-				return false;
+		int []k = Board.indexToCoordinate(this.kindPosition);
+		if(this.blackAroundKing() == 2 && !(this.kindPosition == Board.NORD_CENTER_POS || this.kindPosition == Board.EST_CENTER_POS || this.kindPosition == Board.SUD_CENTER_POS || this.kindPosition == Board.OVEST_CENTER_POS)) {
+			return true;
+		}
+		else if(this.blackAroundKing() == 3 && (this.kindPosition == Board.NORD_CENTER_POS || this.kindPosition == Board.EST_CENTER_POS || this.kindPosition == Board.SUD_CENTER_POS || this.kindPosition == Board.OVEST_CENTER_POS))
+			return true;
+		else if(k[0] > 1 && this.getCell(k[0]+1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]-1, k[1])  
+				||  k[0] < 9 && this.getCell(k[0]-1, k[1]).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0]+1, k[1]) 
+				||  k[1] > 1 && this.getCell(k[0], k[1]+1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]-1)  
+				||  k[1] < 9 && this.getCell(k[0], k[1]-1).getType() == Type.BLACK_ROOK && Board.isForbidden(k[0], k[1]+1) ){
+			return true;
+		}
+		return false;
 			
 	}
 

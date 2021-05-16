@@ -8,11 +8,10 @@ import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class Client extends TablutClient{
-	//TODO
-	//ALLA FINE HO COMMENTATNO I System.exit e messo i return.
+
 	
 	private static final String NAME = "Trent";
-	private static int timeOut = 10;
+	private static int timeOut = 60;
 	private final int currentDepthLimit;
 	private static int [] weight = null;
 
@@ -26,19 +25,19 @@ public class Client extends TablutClient{
 
 	public Client(String player, int timeout, String ipAddress) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);
-		Client.timeOut = timeout -3;
-		currentDepthLimit = 4;
+		Client.timeOut = timeout -1;
+		currentDepthLimit = 1000;
 	}
 
 	public Client(String player, int timeout, String ipAddress, int depth) throws UnknownHostException, IOException {
 		super(player, NAME , timeout, ipAddress);
-		Client.timeOut = timeout - 2;  //Changed
+		Client.timeOut = timeout - 1;
 		this.currentDepthLimit = depth;
 	}
 
 	public Client(String player) throws IOException {
 		super(player, NAME);
-		Client.timeOut = 8;
+		Client.timeOut = 59;
 		currentDepthLimit = 4;
 	}
 
@@ -110,9 +109,9 @@ public class Client extends TablutClient{
 					/*****ACTION*****/
 					long start = System.currentTimeMillis();
 					
-					System.out.println("START");
+					//System.out.println("START");
 					Mossa res = mm.iterative(new Board(getCurrentState().clone()), turnoMio);
-					System.out.println("MOSSA DA "+res.getOldPos()+ " A "+res.getNewPos());
+					//System.out.println("MOSSA DA "+res.getOldPos()+ " A "+res.getNewPos());
 					//a1 - a9 --- i1 - i9
 					int []old = Board.indexToCoordinate(res.getOldPos());
 					int []n = Board.indexToCoordinate(res.getNewPos());
@@ -125,19 +124,19 @@ public class Client extends TablutClient{
 					/**************/
 
 				} else if (this.getCurrentState().getTurn().equals(turnoNemico)) {
-					System.out.println("Waiting for your opponent move... ");
+					//System.out.println("Waiting for your opponent move... ");
 				} else if (this.getCurrentState().getTurn().equals(Turn.WHITEWIN)) {
 					System.out.println(s);
-					//System.exit(0);
-					return;
+					System.exit(0);
+					//return;
 				} else if (this.getCurrentState().getTurn().equals(Turn.BLACKWIN)) {
 					System.out.println(s2);
-					return;
-					//System.exit(0);
+					//return;
+					System.exit(0);
 				} else if (this.getCurrentState().getTurn().equals(Turn.DRAW)) {
 					System.out.println("DRAW!");
-					//System.exit(0);
-					return;
+					System.exit(0);
+					//return;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -152,18 +151,6 @@ public class Client extends TablutClient{
 	}
 }
 	
-	//Connect
-	
-	//Send infos (name)
-	
-	//Get color(white/black) and time
-	
-	//Loop
-		//Get state
-		
-		//Evaluate the state e return the best state
-	
-		
-		//Send answer state
+
 		
 	

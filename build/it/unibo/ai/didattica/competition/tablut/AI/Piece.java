@@ -28,15 +28,6 @@ public class Piece {
 	public boolean canMooveInsideForbiddenArea() {
 		return this.canMooveInsideForbiddenArea;
 	}
-	/*
-	public boolean canMoove(int r, int c) {
-		
-	}
-	
-	public boolean canMoove(int d) {
-		int []pos = Board.indexToCoordinate(d);
-		return this.canMoove(pos[0], pos[1]);
-	}*/
 
 
 	
@@ -58,12 +49,11 @@ public class Piece {
 		this.row = poss[0];
 		this.column = poss[1];
 		if(canMooveInsideForbiddenArea) {
-			//check if he can no long enter in the forbidden area
 			int pos[] = Board.indexToCoordinate(position);
 			boolean dentro = false;
 			for(int []p : Board.forbiddenCells) {
 				if(p[0] == pos[0] && p[1] == pos[1]) { // Stessa riga e colonna
-					dentro = true; //Si � mosso ma � ancora dentro quindi pu� ancora muoversi
+					dentro = true;
 					break;
 				}
 			}

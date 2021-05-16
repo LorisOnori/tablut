@@ -1,0 +1,132 @@
+May 15, 2021 5:07:40 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Accensione server
+May 15, 2021 5:07:41 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Partita di Tablut
+May 15, 2021 5:07:41 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Waiting for white connection..
+May 15, 2021 5:08:19 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: White player connected
+May 15, 2021 5:08:19 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura nome player bianco in corso..
+May 15, 2021 5:08:20 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: White player name:	Trent
+May 15, 2021 5:08:20 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Waiting for Black connection..
+May 15, 2021 5:08:58 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Accettata connessione con client giocatore Nero
+May 15, 2021 5:08:58 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura nome player nero in corso..
+May 15, 2021 5:08:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Black player name:	Trent
+May 15, 2021 5:08:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai giocatori
+May 15, 2021 5:08:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:09:09 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from g5 to g1
+May 15, 2021 5:09:09 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:09:09 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:09:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from e2 to d2
+May 15, 2021 5:09:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:09:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:09:32 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from c5 to c2
+May 15, 2021 5:09:32 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:09:32 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:09:41 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from h5 to h6
+May 15, 2021 5:09:41 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:09:41 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:09:50 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from e7 to h7
+May 15, 2021 5:09:50 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:09:50 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:09:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from b5 to b6
+May 15, 2021 5:09:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:09:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:10:09 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from e6 to c6
+May 15, 2021 5:10:09 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:10:09 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:10:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from e8 to d8
+May 15, 2021 5:10:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:10:18 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:10:27 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from d5 to d7
+May 15, 2021 5:10:27 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:10:27 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:10:36 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from i6 to i7
+May 15, 2021 5:10:36 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:10:36 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:10:45 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from d7 to a7
+May 15, 2021 5:10:45 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:10:45 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:10:56 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from d9 to a9
+May 15, 2021 5:10:56 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:10:56 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:11:11 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from c2 to c1
+May 15, 2021 5:11:11 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:11:11 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:11:21 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from f9 to i9
+May 15, 2021 5:11:21 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:11:21 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:11:31 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from e3 to a3
+May 15, 2021 5:11:31 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:11:31 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:11:40 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from e9 to h9
+May 15, 2021 5:11:40 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:11:40 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player W in corso..
+May 15, 2021 5:11:50 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: W Pawn from a3 to i3
+May 15, 2021 5:11:50 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
+May 15, 2021 5:11:50 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Lettura mossa player B in corso..
+May 15, 2021 5:11:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Move received.	Turn: B Pawn from d1 to d9
+May 15, 2021 5:11:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+WARNING: Chiusura sistema per troppi errori giocatore nero
+May 15, 2021 5:11:59 PM it.unibo.ai.didattica.competition.tablut.server.ServerGenetic run
+FINE: Invio messaggio ai client
